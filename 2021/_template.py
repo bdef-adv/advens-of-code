@@ -5,7 +5,7 @@ import sys
 
 FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
-
+FILENAME_PART2_EXT = ""
 
 def solution_part1(filename):
     with open(filename, "r") as file:
@@ -29,8 +29,8 @@ if __name__ == "__main__":
 
     print("--- Part Two ---")
     print("Test result:")
-    print(solution_part2(f"input.{FILENAME_TRUNC}_2.test.txt"))
+    print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.test.txt"))
 
     print("Result:")
-    print(solution_part2(f"input.{FILENAME_TRUNC}_2.txt"))
+    print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.txt"))
 
