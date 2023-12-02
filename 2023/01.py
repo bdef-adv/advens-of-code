@@ -26,24 +26,19 @@ def get_digits(string):
     places = {}
     for num, trad in TRADUCTION.items():
         if num in string:
-            if trad not in places:
-                places[trad] = []
-            i = 0
-            while True:
-                try:
-                    places[trad].append(string.index(num, i))
-                    i = places[trad][-1]+1
-                except Exception:
-                    break
+            places[trad] = list(filter(lambda v: v != -1, [string.find(num), string.rfind(num)]))
+            print(string.rstrip(), num, trad, places[trad])
+
     min_values = list(sorted(places, key=lambda v: min(places[v])))
     max_values = list(sorted(places, key=lambda v: max(places[v])))
+    #print(min_values, max_values)
     return min_values[0] * 10 + max_values[-1]
 
 def solution_part2(filename):
     with open(filename, "r") as file:
         result = 0
         for _line in file:
-            result += get_digits(_line)
+            result += get_digits(_line.rstrip())
         return result
 
 
