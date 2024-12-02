@@ -13,11 +13,13 @@ def get_permutations(springs, damaged):
     count = springs.count('?')
     perms = set(combinations(".#"*count, count))
     results = set()
+
     for perm in perms:
         new_spring = ""
         new_damaged = []
         index = 0
         curr_damaged = 0
+
         for x, ch in enumerate(springs):
             if ch == '?':
                 new_spring += perm[index]
@@ -30,11 +32,43 @@ def get_permutations(springs, damaged):
                 if curr_damaged:
                     new_damaged.append(curr_damaged)
                 curr_damaged = 0
+
         if curr_damaged:
             new_damaged.append(curr_damaged)
-        if new_damaged == list(map(int, damaged)):
+
+        if tuple(new_damaged) == damaged:
             results.add(new_spring)
-    return results
+
+    return len(results)
+
+def get_permutations_rec(springs, damaged, curr_damaged_size):
+    if not springs:
+        if not curr_damaged_size and not damaged:
+            return 1
+        if len(damaged) == 1 and curr_damaged_size == damaged[0]:
+            return 1
+        return 0
+
+    spring = springs[0]
+    springs = springs[1::]
+    current_damaged = damaged[0] if damaged else 0
+    next_damaged = damaged[1::] if len(damaged) > 1 else []
+
+    if spring == '.':
+        if curr_damaged_size == 0:
+            return get_permutations_rec(springs, damaged, 0)
+        if curr_damaged_size == current_damaged:
+            return get_permutations_rec(springs, next_damaged, 0)
+        return 0
+
+    if spring == '#':
+        if curr_damaged_size > current_damaged:
+            return 0
+        else:
+            return get_permutations_rec(springs, damaged, curr_damaged_size + 1)
+
+    if spring == '?':
+        return get_permutations_rec('#'+springs, damaged, curr_damaged_size) + get_permutations_rec('.'+springs, damaged, curr_damaged_size)
 
 def solution_part1(filename):
     """ PART 1
@@ -44,13 +78,14 @@ def solution_part1(filename):
         for _line in file:
             line = _line.rstrip()
             springs, damaged = line.split()
-            spring_records[springs] = damaged.split(',')
+            spring_records[springs] = list(map(int, damaged.split(',')))
 
         result = 0
         for springs, damaged in spring_records.items():
-            permutations = get_permutations(springs, damaged)
-            #print(springs, permutations, damaged)
-            result += len(permutations)
+            #print(springs, damaged)
+            permutations = get_permutations_rec(springs, damaged, 0)
+            print(permutations, springs, damaged)
+            result += permutations
 
         return result
 
