@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+""" day 6 """
 from pathlib import Path
 import sys
 
@@ -33,7 +33,7 @@ def solution_part1(filename):
                     current_wins.append(holding)
             won.append(len(current_wins))
 
-        result = won[0] 
+        result = won[0]
         for w in won[1::]:
             result *= w
         return result
@@ -65,7 +65,7 @@ def solution_part2(filename):
                 current_wins.append(holding)
         won.append(len(current_wins))
 
-        result = won[0] 
+        result = won[0]
         for w in won[1::]:
             result *= w
         return result

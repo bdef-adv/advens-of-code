@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+""" day 4 """
 from pathlib import Path
 import sys
 
@@ -14,7 +14,7 @@ def solution_part1(filename):
         final_score = 0
         for _line in file:
             line = _line.rstrip()
-            card, data = line.split(": ")
+            _, data = line.split(": ")
             left, right = map(str.split, data.split(' | '))
             points = 0
             for number in right:
@@ -24,7 +24,6 @@ def solution_part1(filename):
                     else:
                         points *= 2
             final_score += points
-            #print(f"{line}: {left}, {right} ({points}) {numbers}")
 
         return final_score
 
@@ -47,7 +46,6 @@ def solution_part2(filename):
     """ PART 2
     """
     with open(filename, "r", encoding="utf-8") as file:
-        final_score = 0
         cards = []
         for _line in file:
             line = _line.rstrip()

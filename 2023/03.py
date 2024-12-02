@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+""" day 3 """
 from pathlib import Path
 import sys
 
@@ -37,7 +37,8 @@ def solution_part1(filename):
                 end_x = x - 1
                 found = False
                 for _y in range(y-1 if y-1 >= 0 else 0, y+2 if y+2 <= size_y else size_y):
-                    if not current_number: break
+                    if not current_number:
+                        break
 
                     for _x in range(start_x-1 if start_x -1 >= 0 else 0, end_x+2 if end_x+2<= size_x else size_x):
                         if current_number and twod_map[_y][_x] not in ['.'] and not twod_map[_y][_x].isdigit():
@@ -47,7 +48,7 @@ def solution_part1(filename):
                     if found:
                         break
                 current_number = ""
-    
+
     return sum(parts_number)
 
 
@@ -75,25 +76,28 @@ def solution_part2(filename):
                 current_number += twod_map[y][x]
             elif twod_map[y][x] in ['*'] and current_number:
                 end_x = x - 1
-                if (y, x) not in parts_number: parts_number[(y,x)] = []
+                if (y, x) not in parts_number:
+                    parts_number[(y,x)] = []
                 parts_number[(y,x)].append(int(current_number))
                 current_number = ""
             elif twod_map[y][x] == '.':
                 end_x = x - 1
                 found = False
                 for _y in range(y-1 if y-1 >= 0 else 0, y+2 if y+2 <= size_y else size_y):
-                    if not current_number: break
+                    if not current_number:
+                        break
 
                     for _x in range(start_x-1 if start_x -1 >= 0 else 0, end_x+2 if end_x+2<= size_x else size_x):
                         if current_number and twod_map[_y][_x] in ['*']:
-                            if (_y, _x) not in parts_number: parts_number[(_y,_x)] = []
+                            if (_y, _x) not in parts_number:
+                                parts_number[(_y,_x)] = []
                             parts_number[(_y, _x)].append(int(current_number))
                             found = True
                             break
                     if found:
                         break
                 current_number = ""
-    
+
     final_count = 0
     for _, gears in parts_number.items():
         if len(gears) == 2:
