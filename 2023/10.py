@@ -1,5 +1,6 @@
 #!/usr/bin/python
-
+"""day10
+"""
 from pathlib import Path
 import sys
 
@@ -9,103 +10,93 @@ FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
 FILENAME_PART2_EXT = ""
 
-"""
-    | is a vertical pipe connecting north and south.
-    - is a horizontal pipe connecting east and west.
-    L is a 90-degree bend connecting north and east.
-    J is a 90-degree bend connecting north and west.
-    7 is a 90-degree bend connecting south and west.
-    F is a 90-degree bend connecting south and east.
-    . is ground; there is no pipe in this tile.
-    S is the starting position of the animal; there is a pipe on this tile, but your sketch doesn't show what shape the pipe has.
-"""
-
-DIRECTIONS = {(-1, 0): '|',
-              (0, 1): '-',
-              (1, 0): '|',
-              (0, 0): '',
-              }
 
 class Maze:
+    """ maze class """
     def __init__(self):
         self.maze = []
         self.position = (0, 0)
         self.size = 0
 
     def append(self, line):
+        """ add line to maze """
         self.maze.append(line)
         if 'S' in line:
             self.position = (self.size, line.find('S'))
         self.size += 1
 
-    def get(self, tupl):
-        y, x = tupl
+    def get(self, position):
+        """ get character at position """
+        y, x = position
         if y > self.size or x > len(self.maze[y]):
             return None
         return self.maze[y][x]
 
     def next_move(self, position, move_tuple):
+        """ Get next move by adding position and move_tuple values """
         return tuple(map(sum, zip(position, move_tuple)))
 
     def get_next_direction(self, direction, curr_char):
+        """ Get next direction for coursing through the maze """
         if curr_char is None:
             return None
 
         if direction == (-1, 0): # If we were going up '|'
+            if curr_char == '|':
+                return direction
+            if curr_char == '-':
+                return None
             if curr_char == 'L':
                 return None
-            elif curr_char == 'J':
+            if curr_char == 'J':
                 return None
-            elif curr_char == '7':
+            if curr_char == '7':
                 return (0, -1)
-            elif curr_char == 'F':
+            if curr_char == 'F':
                 return (0, 1)
-            elif curr_char == '|':
+        elif direction == (0, 1): # if we were going right '-', 'F', 'L'
+            if curr_char == '|':
+                return None
+            if curr_char == '-':
                 return direction
-            elif curr_char == '-':
+            if curr_char == 'L':
+                return None
+            if curr_char == 'J':
+                return (-1, 0)
+            if curr_char == '7':
+                return (1, 0)
+            if curr_char == 'F':
                 return None
         elif direction == (1, 0): # If we were going down '|'
             if curr_char == 'L':
                 return (0, 1)
-            elif curr_char == 'J':
+            if curr_char == 'J':
                 return (0, -1)
-            elif curr_char == '7':
+            if curr_char == '7':
                 return None
-            elif curr_char == 'F':
+            if curr_char == 'F':
                 return None
-            elif curr_char == '|':
+            if curr_char == '|':
                 return direction
-            elif curr_char == '-':
+            if curr_char == '-':
                 return None
         elif direction == (0, -1): # if we were going left '-', '7', 'J'
             if curr_char == 'L':
                 return (-1, 0)
-            elif curr_char == 'J':
+            if curr_char == 'J':
                 return None
-            elif curr_char == '7':
+            if curr_char == '7':
                 return None
-            elif curr_char == 'F':
+            if curr_char == 'F':
                 return (1, 0)
-            elif curr_char == '|':
+            if curr_char == '|':
                 return None
-            elif curr_char == '-':
+            if curr_char == '-':
                 return direction
-        elif direction == (0, 1): # if we were going right '-', 'F', 'L'
-            if curr_char == 'L':
-                return None
-            elif curr_char == 'J':
-                return (-1, 0)
-            elif curr_char == '7':
-                return (1, 0)
-            elif curr_char == 'F':
-                return None
-            elif curr_char == '|':
-                return None
-            elif curr_char == '-':
-                return direction
-            
+
 
     def get_max_moves(self, direction):
+        """ get max moves taken when going down a direction """
         curr_char = 'S'
         steps = 0
         next_pos = self.position
@@ -123,6 +114,7 @@ class Maze:
 
 
     def get_all_paths(self, direction):
+        """ get all paths along the directio """
         curr_char = 'S'
         steps = [(self.position, direction)]
         next_pos = self.position
@@ -137,21 +129,25 @@ class Maze:
                 return steps
 
     def is_point_in_maze(self, point, paths):
+        """ Method to check if the point is inside the maze or not """
+        if point in paths:
+            return False
         polygon = Polygon(paths)
         _y, _x = point
         point = Point(_y, _x)
         return polygon.contains(point)
 
     def count_enclosed_by_path(self, paths):
+        """ Count every tile enclosed in maze """
         points = set()
 
         n_paths = [v[0] for v in paths]
 
         for y, rows in enumerate(self.maze):
-            for x, ch in enumerate(rows):
+            for x, _ in enumerate(rows):
                 point = (y, x)
-                if point in n_paths:
-                    continue
+                #if point in n_paths:
+                #    continue
                 if self.is_point_in_maze(point, n_paths):
                     points.add(point)
         return len(points)
@@ -162,16 +158,12 @@ def solution_part1(filename):
     """
     with open(filename, "r", encoding="utf-8") as file:
         maze = Maze()
-        for y, _line in enumerate(file):
+        for _line in file:
             line = _line.rstrip()
             maze.append(line)
 
-        steps = 0
-        max_steps = 0
-        proper_way = ""
-
         answer = list(filter(lambda v: v % 2 == 0, [
-            maze.get_max_moves((1, 0)), 
+            maze.get_max_moves((1, 0)),
             maze.get_max_moves((-1, 0)),
             maze.get_max_moves((0, 1)),
             maze.get_max_moves((0, -1))
@@ -186,16 +178,12 @@ def solution_part2(filename):
     """
     with open(filename, "r", encoding="utf-8") as file:
         maze = Maze()
-        for y, _line in enumerate(file):
+        for _line in file:
             line = _line.rstrip()
             maze.append(line)
 
-        steps = 0
-        max_steps = 0
-        proper_way = ""
-
         paths = list(filter(lambda v: len(v) % 2 != 0, [
-            maze.get_all_paths((1, 0)), 
+            maze.get_all_paths((1, 0)),
             maze.get_all_paths((-1, 0)),
             maze.get_all_paths((0, 1)),
             maze.get_all_paths((0, -1))
