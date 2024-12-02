@@ -28,41 +28,24 @@ def solution_part1(filename):
                 elif current_map:
                     convert_maps[current_map].append(list(map(int, line.split())))
 
-        conversion = {}
+        seed_data = {s: {"soil": None, "fertilizer": None, "water": None, "light": None, "temperature":None, "humidity": None, "location": None} for s in seeds}
         for name, convert_map in convert_maps.items():
             l, r = name.split("-to-")
-            conversion[l] = [r, {}]
             for i in range(0, len(convert_map)):
                 dest_range_start, src_range_start, range_len = convert_map[i]
 
-                for i in range(range_len):
-                    conversion[l][1][src_range_start+i] = dest_range_start + i
+                for seed in seeds:
+                    s = seed_data[seed][l] if l in seed_data[seed] and seed_data[seed][l] else seed
+                    #print(f"{seed} ({s}): {l} to {r} => {dest_range_start} {src_range_start} - {range_len} = {dest_range_start + (s - src_range_start)} ({src_range_start <= s < src_range_start + range_len})")
+                    if src_range_start <= s < src_range_start + range_len:
+                        seed_data[seed][r] = dest_range_start + (s - src_range_start)
+                    elif l in seed_data[seed] and not seed_data[seed][r]:
+                        #print(f"Not found: {seed} ({l} {r}): {seed_data[seed]}")
+                        seed_data[seed][r] = s
+                    elif not seed_data[seed][r]:
+                        seed_data[seed][r] = seed
 
-                #print(f"{i} convert_map {name}: dst={dest_range_start} src={src_range_start} len={range_len} {conversion[l]}")
-
-
-        seed_data = {s: {} for s in seeds}
-        for seed in seeds:
-            res_soil = conversion['seed'][1][seed] if seed in conversion['seed'][1] else seed
-            seed_data[seed]["soil"] = res_soil
-
-            res_fert = conversion['soil'][1][res_soil] if res_soil in conversion['soil'][1] else res_soil
-            seed_data[seed]["fertilizer"] = res_fert
-
-            res_water = conversion['fertilizer'][1][res_fert] if res_fert in conversion['fertilizer'][1] else res_fert
-            seed_data[seed]["water"] = res_water
-
-            res_light = conversion['water'][1][res_water] if res_water in conversion['water'][1] else res_water
-            seed_data[seed]["light"] = res_light
-
-            res_temp = conversion['light'][1][res_light] if res_light in conversion['light'][1] else res_light
-            seed_data[seed]["temperature"] = res_temp
-
-            res_humidity = conversion['temperature'][1][res_temp] if res_temp in conversion['temperature'][1] else res_temp
-            seed_data[seed]["humidity"] = res_temp
-
-            res_location = conversion['humidity'][1][res_humidity] if res_humidity in conversion['humidity'][1] else res_humidity
-            seed_data[seed]["location"] = res_location
+        print(seed_data)
 
         min_location = None
         for seed, data in seed_data.items():
