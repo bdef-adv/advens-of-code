@@ -15,7 +15,9 @@ TRADUCTION = {
 }
 
 def solution_part1(filename):
-    with open(filename, "r") as file:
+    """ PART 1
+    """
+    with open(filename, "r", encoding="utf-8") as file:
         result = 0
         for _line in file:
             line = list(filter(str.isdigit,_line.rstrip()))
@@ -23,24 +25,23 @@ def solution_part1(filename):
         return result
 
 def get_digits(string):
+    """ part 2 answer
+    """
     places = {}
     for num, trad in TRADUCTION.items():
         if num in string:
             if trad not in places:
                 places[trad] = []
-            i = 0
-            while True:
-                try:
-                    places[trad].append(string.index(num, i))
-                    i = places[trad][-1]+1
-                except Exception:
-                    break
-    min_values = list(sorted(places, key=lambda v: min(places[v])))
-    max_values = list(sorted(places, key=lambda v: max(places[v])))
-    return min_values[0] * 10 + max_values[-1]
+            places[trad].append(string.find(num))
+            places[trad].append(string.rfind(num))
+    min_value = list(sorted(places, key=lambda v: min(places[v])))[0]
+    max_value = list(sorted(places, key=lambda v: max(places[v])))[-1]
+    return min_value * 10 + max_value
 
 def solution_part2(filename):
-    with open(filename, "r") as file:
+    """ PART 2
+    """
+    with open(filename, "r", encoding="utf-8") as file:
         result = 0
         for _line in file:
             result += get_digits(_line)

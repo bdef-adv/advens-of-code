@@ -8,13 +8,17 @@ FILENAME_TRUNC = Path(FILENAME).stem
 FILENAME_PART2_EXT = ""
 
 def solution_part1(filename):
-    with open(filename, "r") as file:
+    """ PART 1
+    """
+    with open(filename, "r", encoding="utf-8") as file:
         for _line in file:
             line = _line.rstrip()
 
 
 def solution_part2(filename):
-    with open(filename, "r") as file:
+    """ PART 2
+    """
+    with open(filename, "r", encoding="utf-8") as file:
         for _line in file:
             line = _line.rstrip()
 
