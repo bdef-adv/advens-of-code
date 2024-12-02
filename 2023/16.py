@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+""" day 16 """
 from pathlib import Path
 import sys
 
@@ -33,13 +33,10 @@ DIRECTION_TO_STR = {
     Point(1, 0): "down",
     Point(-1, 0): "up"
 }
+STR_TO_DIRECTION = {r: l for l, r in DIRECTION_TO_STR.items()}
 
-STR_TO_DIRECTION = {
-    "right": Point(0, 1),
-    "left": Point(0, -1),
-    "down": Point(1, 0),
-    "up": Point(-1, 0)
-}
+SLASH_DIR = {"left": "down", "right": "up", "down": "left", "up": "right"}
+BACKSLASH_DIR = {"left": "up", "right": "down", "down": "right", "up": "left"}
 
 def display_map(puzzle, beams=None):
     """ display 2d map """
@@ -47,7 +44,7 @@ def display_map(puzzle, beams=None):
         for l in puzzle:
             print(l)
         return None
-    nbeams = set([l if isinstance(l, Point) else l[0] for l in beams])
+    nbeams = {l if isinstance(l, Point) else l[0] for l in beams}
     count = 0
     for y, l in enumerate(puzzle):
         for x, ch in enumerate(l):
@@ -61,59 +58,35 @@ def display_map(puzzle, beams=None):
 
 def count_beams(beams):
     """ How much beams are lit up """
-    return len(set([l if isinstance(l, Point) else l[0] for l in beams]))
+    return len({l if isinstance(l, Point) else l[0] for l in beams})
 
 def get_path(puzzle, position, direction, already_lit_up):
     """ recursive function to advance through the puzzle """
     next_pos = position + direction
-    #print(f"Current position: {position}, Direction: {direction}, Next position: {next_pos}")
     if (next_pos.y < 0 or next_pos.x < 0 or
         next_pos.y >= len(puzzle) or next_pos.x >= len(puzzle[0]) or
         (next_pos, direction) in already_lit_up):
-        #print(f"END OF PUZZLE: {already_lit_up}")
         return already_lit_up
 
     next_char = puzzle[next_pos.y][next_pos.x]
 
     already_lit_up.add((next_pos, direction))
-    if next_char == '.':
+    if (next_char == '.' or
+        (next_char == '-' and DIRECTION_TO_STR[direction] not in ["down", "up"]) or
+        (next_char == '|' and DIRECTION_TO_STR[direction] not in ["left", "right"])):
         return get_path(puzzle, next_pos, direction, already_lit_up)
-
-    if next_char == '\\':
-        next_direction = direction
-        match DIRECTION_TO_STR[direction]:
-            case "right":
-                next_direction = STR_TO_DIRECTION["down"]
-            case "left":
-                next_direction = STR_TO_DIRECTION["up"]
-            case "down":
-                next_direction = STR_TO_DIRECTION["right"]
-            case "up":
-                next_direction = STR_TO_DIRECTION["left"]
-        return get_path(puzzle, next_pos, next_direction, already_lit_up)
-
-    if next_char == '/':
-        next_direction = direction
-        match DIRECTION_TO_STR[direction]:
-            case "right":
-                next_direction = STR_TO_DIRECTION["up"]
-            case "left":
-                next_direction = STR_TO_DIRECTION["down"]
-            case "down":
-                next_direction = STR_TO_DIRECTION["left"]
-            case "up":
-                next_direction = STR_TO_DIRECTION["right"]
-        return get_path(puzzle, next_pos, next_direction, already_lit_up)
 
     if next_char == '-':
-        if DIRECTION_TO_STR[direction] in ["down", "up"]:
-            return get_path(puzzle, next_pos, STR_TO_DIRECTION["left"], already_lit_up) | get_path(puzzle, next_pos, STR_TO_DIRECTION["right"], already_lit_up)
-        return get_path(puzzle, next_pos, direction, already_lit_up)
+        return (get_path(puzzle, next_pos, STR_TO_DIRECTION["left"], already_lit_up) |
+                get_path(puzzle, next_pos, STR_TO_DIRECTION["right"], already_lit_up))
 
     if next_char == '|':
-        if DIRECTION_TO_STR[direction] in ["left", "right"]:
-            return get_path(puzzle, next_pos, STR_TO_DIRECTION["up"], already_lit_up) | get_path(puzzle, next_pos, STR_TO_DIRECTION["down"], already_lit_up)
-        return get_path(puzzle, next_pos, direction, already_lit_up)
+        return (get_path(puzzle, next_pos, STR_TO_DIRECTION["up"], already_lit_up) |
+                get_path(puzzle, next_pos, STR_TO_DIRECTION["down"], already_lit_up))
+
+    # Always either '/' or '\\'
+    next_dict = SLASH_DIR if next_char == '/' else BACKSLASH_DIR
+    return get_path(puzzle, next_pos, STR_TO_DIRECTION[next_dict[DIRECTION_TO_STR[direction]]], already_lit_up)
 
 
 
