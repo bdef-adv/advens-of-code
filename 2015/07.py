@@ -3,6 +3,8 @@
 from pathlib import Path
 import sys
 import operator
+from collections import defaultdict
+import re
 
 FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
@@ -13,55 +15,93 @@ OPERATIONS = {"AND": operator.and_,
               "LSHIFT": operator.lshift,
               "RSHIFT": operator.rshift}
 
+RESULTS = {}
+
+def calculate(wires, key):
+    """ recursive function to calculate results """
+    operation, left, right = wires[key]
+
+    #print(f"\rcalculating {key} => {left} {operation} {right}", end="")
+
+    if operation == "IS":
+        if left.isdigit():
+            RESULTS[left] = int(left)
+            return int(left)
+        if left in RESULTS:
+            return RESULTS[left]
+
+        return calculate(wires, left)
+
+    if operation == "NOT":
+        if left.isdigit():
+            return ~int(left)
+        if left in RESULTS:
+            return ~RESULTS[left]
+
+        return ~calculate(wires, left)
+
+    if operation in OPERATIONS:
+        l, r = 0, 0
+        if left.isdigit():
+            l = int(left)
+        elif left in RESULTS:
+            l = RESULTS[left]
+        else:
+            l = calculate(wires, left)
+        if right.isdigit():
+            r = int(right)
+        elif right in RESULTS:
+            r = RESULTS[right]
+        else:
+            r = calculate(wires, right)
+
+        res = OPERATIONS[operation](l, r)
+        RESULTS[key] = res 
+        return res
+
+
+
 def solution_part1(filename):
     """ PART 1
     """
     with open(filename, "r", encoding="utf-8") as file:
-        wires = {k: 0 for k in []}
+        wires = defaultdict(list)
         for _line in file:
             line = _line.rstrip()
             left, right = line.split(" -> ")
             if "NOT" in left:
                 wire = left.split("NOT ")[1]
-                if right in wires:
-                    wires[right] = ~wires[wire]
+                wires[right] = ("NOT", wire, None)
             else:
-                operation_found = False
-                for operation, func in OPERATIONS.items():
-                    if operation in left:
-                        operation_found = True
-                        l, r = left.split(f" {operation} ")
-                        if l.isdigit():
-                            l = int(l)
-                        elif l in wires:
-                            l = wires[l]
-                        else:
-                            l = 0
+                assignment = re.compile(r"^([\d\w]+)$")
+                assignment = assignment.findall(left)
+                if assignment:
+                    wires[right] = ("IS", assignment[0], None)
+                    continue
 
-                        if r.isdigit():
-                            r = int(r)
-                        elif r in wires:
-                            r = wires[r]
-                        else:
-                            r = 0
+                operations = re.compile(r"^([a-z\d]+) ([A-Z]+) ([a-z\d]+)$")
+                operations = operations.findall(left)
+                if not operations:
+                    continue
 
-                        if right in wires:
-                            wires[right] = func(l, r)
+                l, operation, r = operations[0]
+                wires[right] = (operation, l, r)
 
+            #print(right, '=', wires[right])
 
-                if not operation_found and right in wires:
-                    wires[right] = int(left)
+        if 'a' not in wires:
+            return wires
 
-        return wires if 'a' not in wires else wires[a]
+        part1 = calculate({k: wires[k] for k in sorted(wires)}, "a")
 
+        print(wires['b'])
+        wires['b'] = wires['a'] #("IS", str(part1), None)
+        print(wires['b'])
+        global RESULTS
+        RESULTS = []
+        part2 = calculate({k: wires[k] for k in sorted(wires)}, "a")
+        return (part1, part2)
 
-
-def solution_part2(filename):
-    """ PART 2
-    """
-    with open(filename, "r", encoding="utf-8") as file:
-        for _line in file:
-            line = _line.rstrip()
 
 
 if __name__ == "__main__":
@@ -71,10 +111,3 @@ if __name__ == "__main__":
 
     print("Result:")
     print(solution_part1(f"input.{FILENAME_TRUNC}.txt"))
-
-    print("--- Part Two ---")
-    print("Test result:")
-    print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.test.txt"))
-
-    print("Result:")
-    print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.txt"))
