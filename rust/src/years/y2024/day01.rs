@@ -3,6 +3,7 @@ fn part01(_file_contents: &str) -> u32 {
         Part 1
      */
     let mut sum: u32 = 0;
+    sum += 0;
     return sum;
 }
 
@@ -12,6 +13,7 @@ fn part02(_file_contents: &str) -> u32 {
         Part 2
      */
     let mut sum: u32 = 0;
+    sum += 0;
     return sum;
 }
 
