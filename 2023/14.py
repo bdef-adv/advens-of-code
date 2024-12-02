@@ -82,7 +82,8 @@ def solution_part2(filename):
             line = _line.rstrip()
             puzzle.append(line)
 
-        for i in progressbar(range(1000000000)):
+        len_puzzle = len(puzzle)
+        for i in range(1000):
             puzzle = get_slipped_map_north(puzzle) # Flipped north
             #print("North")
             #display_map(puzzle)
@@ -108,11 +109,15 @@ def solution_part2(filename):
             #display_map(puzzle)
 
 
-        count = 0
-        len_puzzle = len(puzzle)
+            count = 0
 
-        for x, line in enumerate(puzzle):
-            count += Counter(line)['O'] * (len_puzzle - x)
+            for x, line in enumerate(puzzle):
+                count += Counter(line)['O'] * (len_puzzle - x)
+
+            print(f"\rCount: {count} Iteration: {i}", end="")
+
+        print()
+
         return count
 
 
@@ -126,7 +131,7 @@ if __name__ == "__main__":
 
     print("--- Part Two ---")
     print("Test result:")
-    #print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.test.txt"))
+    print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.test.txt"))
 
     print("Result:")
     print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.txt"))
