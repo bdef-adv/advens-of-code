@@ -84,7 +84,6 @@ def get_path(puzzle, position, direction, already_lit_up):
         return (get_path(puzzle, next_pos, STR_TO_DIRECTION["up"], already_lit_up) |
                 get_path(puzzle, next_pos, STR_TO_DIRECTION["down"], already_lit_up))
 
-    # Always either '/' or '\\'
     next_dict = SLASH_DIR if next_char == '/' else BACKSLASH_DIR
     return get_path(puzzle, next_pos, STR_TO_DIRECTION[next_dict[DIRECTION_TO_STR[direction]]], already_lit_up)
 
@@ -110,16 +109,12 @@ def solution_part2(filename):
         beams = set()
         for y, line in enumerate(puzzle):
             for x, _ in enumerate(line):
-                # Left edge - go right
                 if x == 0:
                     beams.add(count_beams(get_path(puzzle, Point(y, x-1), STR_TO_DIRECTION["right"], set())))
-                # Right edge - go left
                 if x == len_x - 1:
                     beams.add(count_beams(get_path(puzzle, Point(y, x+1), STR_TO_DIRECTION["left"], set())))
-                # Top row - go down
                 if y == 0:
                     beams.add(count_beams(get_path(puzzle, Point(y-1, x), STR_TO_DIRECTION["down"], set())))
-                # Bottom row - go up
                 if y == len_y - 1:
                     beams.add(count_beams(get_path(puzzle, Point(y+1, x), STR_TO_DIRECTION["up"], set())))
         return max(beams)
