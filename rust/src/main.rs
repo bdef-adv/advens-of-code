@@ -1,4 +1,5 @@
 use clap::Parser;
+use std::time::Instant;
 mod utils;
 mod years;
 
@@ -14,10 +15,21 @@ struct Args {
 
 
 fn main() {
-    let args = Args::parse();
-    let mut day = args.day;
+    let args: Args = Args::parse();
+    let mut day: u8 = args.day;
 
+    let timer: Instant = Instant::now();
     let (part_one, part_two): (i32, i32) = years::run_day(&mut day, args.year);
 
-    println!("Part 01: {part_one}\nPart 02: {part_two}")
+    println!("Part 01: {part_one}\nPart 02: {part_two}");
+
+    let millis_limit = 2;
+    let duration = timer.elapsed();
+    let time_unit: char = if duration.as_millis() <= millis_limit {'µ'} else {'m'};
+    let duration_displayed: u128 = if duration.as_millis() <= millis_limit {
+        duration.as_micros()
+    } else {
+        duration.as_millis()
+    };
+    println!("Took: {}{time_unit}s to calculate both parts", duration_displayed);
 }
