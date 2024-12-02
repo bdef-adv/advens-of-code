@@ -52,7 +52,7 @@ def get_path(puzzle, direction, position=Point(0,0), count_direction=0, curr_hea
     len_puzzle = len(puzzle)
     len_puzzle_x = len(puzzle[0])
     if next_pos.y == len_puzzle - 1 and next_pos.x == len_puzzle_x - 1:
-        print(f"Currently at position {position} (Moving {DIRECTION_TO_STR[direction]}) to {next_pos}. {CURR_MIN} ({curr_heat_loss}) ({sorted(already_visited)})")
+        print(f"At position {position} (Moving {DIRECTION_TO_STR[direction]}) to {next_pos}. {CURR_MIN} ({curr_heat_loss}) ({sorted(already_visited)})")
         CURR_MIN = min(CURR_MIN, curr_heat_loss) if CURR_MIN else curr_heat_loss
         return CURR_MIN
     #if CURR_MIN and curr_heat_loss > CURR_MIN:
