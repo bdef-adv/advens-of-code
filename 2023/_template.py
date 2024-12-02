@@ -37,4 +37,3 @@ if __name__ == "__main__":
 
     print("Result:")
     print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.txt"))
-
