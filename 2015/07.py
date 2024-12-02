@@ -17,7 +17,7 @@ def solution_part1(filename):
     """ PART 1
     """
     with open(filename, "r", encoding="utf-8") as file:
-        wires = {}
+        wires = {k: 0 for k in []}
         for _line in file:
             line = _line.rstrip()
             left, right = line.split(" -> ")
