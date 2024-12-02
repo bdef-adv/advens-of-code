@@ -2,46 +2,14 @@
 """ day 12 """
 from pathlib import Path
 import sys
-from itertools import combinations
 from functools import cache
 
 FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
 FILENAME_PART2_EXT = ""
 
-def get_permutations(springs, damaged):
-    """ get all valid combinations """
-    count = springs.count('?')
-    perms = set(combinations(".#"*count, count))
-    results = set()
 
-    for perm in perms:
-        new_spring = ""
-        new_damaged = []
-        index = 0
-        curr_damaged = 0
-
-        for x, ch in enumerate(springs):
-            if ch == '?':
-                new_spring += perm[index]
-                index += 1
-            elif ch in '.#':
-                new_spring += ch
-            if new_spring[x] == '#':
-                curr_damaged += 1
-            elif new_spring[x] == '.':
-                if curr_damaged:
-                    new_damaged.append(curr_damaged)
-                curr_damaged = 0
-
-        if curr_damaged:
-            new_damaged.append(curr_damaged)
-
-        if tuple(new_damaged) == damaged:
-            results.add(new_spring)
-
-    return len(results)
-
+# ce petit batard me fait gagner plusieurs minutes de calcul
 @cache
 def get_permutations_rec(springs, damaged, curr_damaged_size):
     """ we move character by character """
