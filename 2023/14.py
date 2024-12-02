@@ -85,36 +85,26 @@ def solution_part2(filename):
         len_puzzle = len(puzzle)
         for i in range(1000):
             puzzle = get_slipped_map_north(puzzle) # Flipped north
-            #print("North")
-            #display_map(puzzle)
 
-            #print("West")
             new_puzzle = []
             for line in puzzle:
                 new_puzzle.append(get_line(line))
             puzzle = new_puzzle
 
-            #display_map(puzzle)
-
-            #print("South")
             puzzle = get_slipped_map_south(puzzle)
-            #display_map(puzzle)
 
-            #print("East")
             puzzle = [y[::-1] for y in puzzle]
             new_puzzle = []
             for line in puzzle:
                 new_puzzle.append(get_line(line))
             puzzle = [y[::-1] for y in new_puzzle]
-            #display_map(puzzle)
-
 
             count = 0
 
             for x, line in enumerate(puzzle):
                 count += Counter(line)['O'] * (len_puzzle - x)
 
-            print(f"\rCount: {count} Iteration: {i}", end="")
+            print(f"\rCount: {count} Iteration: {i+1}", end="")
 
         print()
 
