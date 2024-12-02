@@ -8,27 +8,8 @@ FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
 FILENAME_PART2_EXT = ""
 
-def is_valid(springs, damaged):
-    """ Compare springs to damaged record to check if it is ok """
-    damaged = list(map(int, damaged))
-    curr_damaged = []
-
-    curr = 0
-    for ch in springs:
-        if ch == '.':
-            if curr:
-                curr_damaged.append(curr)
-            curr = 0
-        elif ch == '?':
-            return False
-        elif ch == '#':
-            curr += 1
-    if curr:
-        curr_damaged.append(curr)
-
-    return curr_damaged == damaged
-
 def get_permutations(springs, damaged):
+    """ get all valid combinations """
     count = springs.count('?')
     perms = set(combinations(".#"*count, count))
     results = set()
@@ -52,10 +33,8 @@ def get_permutations(springs, damaged):
         if curr_damaged:
             new_damaged.append(curr_damaged)
         if new_damaged == list(map(int, damaged)):
-            print(perm, new_spring, is_valid(new_spring, damaged), damaged, new_damaged)
             results.add(new_spring)
-    print(springs, count, results)
-    return perms
+    return results
 
 def solution_part1(filename):
     """ PART 1
@@ -70,10 +49,8 @@ def solution_part1(filename):
         result = 0
         for springs, damaged in spring_records.items():
             permutations = get_permutations(springs, damaged)
+            #print(springs, permutations, damaged)
             result += len(permutations)
-            #for perm in permutations:
-            #    if is_valid(perm, damaged):
-            #        result += 1
 
         return result
 
@@ -92,7 +69,7 @@ if __name__ == "__main__":
     print(solution_part1(f"input.{FILENAME_TRUNC}.test.txt"))
 
     print("Result:")
-    #print(solution_part1(f"input.{FILENAME_TRUNC}.txt"))
+    print(solution_part1(f"input.{FILENAME_TRUNC}.txt"))
 
     print("--- Part Two ---")
     print("Test result:")
