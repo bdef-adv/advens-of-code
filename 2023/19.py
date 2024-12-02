@@ -3,6 +3,8 @@
 from pathlib import Path
 import sys
 
+from collections import defaultdict
+
 INPUT_PATH = str(Path(__file__).parent.resolve()) + '/inputs'
 FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
@@ -36,11 +38,11 @@ def get_negative_condition(condition):
     """ for x<1345 return x>1344 and for x>123 return x<124 """
     if '<' in condition:
         var, val = condition.split('<')
-        val = int(val) + 1
+        val = int(val) - 1
         return f"{var}>{val}"
     else:
         var, val = condition.split('>')
-        val = int(val) - 1
+        val = int(val) + 1
         return f"{var}<{val}"
 
 def get_paths_to_A(workflows, conditions=[], workflow='in'):
@@ -65,6 +67,54 @@ def get_paths_to_A(workflows, conditions=[], workflow='in'):
     curr_conditions.append(get_paths_to_A(workflows, conditions + neg_conditions, last_destination))
     return curr_conditions
 
+def range_from_conditions(conditions):
+    ranges = {"x": [1, 4000], "m": [1, 4000], "a": [1, 4000], "s": [1, 4000]}
+    for condition in conditions:
+        if '<' in condition:
+            var, val = condition.split('<')
+            ranges[var] = [ranges[var][0], min(ranges[var][1], int(val)-1)]
+        if '>' in condition:
+            var, val = condition.split('>')
+            ranges[var] = [max(ranges[var][0], int(val)+1), ranges[var][1]]
+    return ranges
+
+def calculate_range(ran, start):
+    diffs = []
+    for var, val in ran.items():
+        curr = val[1] - val[0] + 1
+        if curr != 4000:
+            diffs.append(curr)
+    return start // 4000 * sum(diffs)
+
+def get_all_paths(workflows, workflow='in', start=4000*4000*4000*4000):
+    """ Get all the conditions possible to go from 'in' to 'A' """
+    if workflow in ["A", "R"]:
+        return {workflow: start}
+
+    steps = workflows[workflow].split(',')
+    last_destination = steps[-1]
+
+    remainder = start
+
+    nodes = defaultdict(int)
+    conditions = defaultdict(list)
+    for index, step in enumerate(steps[:-1]):
+        condition, destination = step.split(':')
+        conditions[destination].append(condition)
+
+    for destination, conditions in conditions.items():
+        curr_range = calculate_range(range_from_conditions(conditions), remainder)
+        nodes[destination] = curr_range
+        remainder -= curr_range
+
+
+    print(f"{workflow} [{remainder}] {last_destination}")
+    for dest, val in nodes.items():
+        print(f"{workflow} [{val}] {dest}")
+
+    nodes[last_destination] = remainder
+    print()
+    return nodes
 
 
 def solution_part1(filename):
@@ -115,8 +165,17 @@ def solution_part2(filename):
             else:
                 break
         
+        destinations = get_all_paths(workflows)
+
+        for destination, start in destinations.items():
+            print(f"Calculating {destination} with start={start}")
+            destinations = get_all_paths(workflows, destination, start)
+
+
+"""
         all_conditions = []
         for _cond in get_paths_to_A(workflows):
+            print(_cond)
             for conditions in _cond:
                 if conditions and isinstance(conditions[0], list):
                     for cond in conditions:
@@ -128,48 +187,43 @@ def solution_part2(filename):
                             all_conditions.append(cond)
                 elif conditions:
                     all_conditions.append(conditions)
-
-        result = 0
-        full_conditions = {"x": set(), "m": set(), "a": set(), "s": set()}
+    
+        full_conditions = defaultdict(list)
         for conditions in all_conditions:
             ranges = {
-                "x": {"min": 1, "max": 4000},
-                "m": {"min": 1, "max": 4000},
-                "a": {"min": 1, "max": 4000},
-                "s": {"min": 1, "max": 4000},
+                "x": [1, 4000],
+                "m": [1, 4000],
+                "a": [1, 4000],
+                "s": [1, 4000],
             }
             for cond in conditions:
                 if '<' in cond:
                     var, val = cond.split('<')
-                    ranges[var]["max"] = min(ranges[var]["max"], int(val)-1)
+                    ranges[var][1] = min(ranges[var][1], int(val)-1)
                 if '>' in cond:
                     var, val = cond.split('>')
-                    ranges[var]["min"] = max(ranges[var]["min"], int(val)+1)
+                    ranges[var][0] = max(ranges[var][0], int(val)+1)
 
-            how_many_possibilities = ((ranges["x"]["max"] - ranges["x"]["min"]) *
-                                      (ranges["m"]["max"] - ranges["m"]["min"]) *
-                                      (ranges["a"]["max"] - ranges["a"]["min"]) *
-                                      (ranges["s"]["max"] - ranges["s"]["min"]))
-            print(conditions)
-            for r, v in ranges.items():
-                print(r, v)
-            print(how_many_possibilities)
+            ranges = {k: tuple(v) for k, v in ranges.items()}
+            print(ranges)
 
-            for var in full_conditions.keys():
-                full_conditions[var].add((ranges[var]["min"], ranges[var]["max"]))
+            full_conditions[ranges["x"]].append([ranges["m"], ranges["a"], ranges["s"]])
+            #full_conditions[ranges["m"]].append([ranges["x"], ranges["a"], ranges["s"]])
+            #full_conditions[ranges["a"]].append([ranges["x"], ranges["m"], ranges["s"]])
+            #full_conditions[ranges["s"]].append([ranges["x"], ranges["m"], ranges["a"]])
 
-            result += how_many_possibilities
-
-        print(f"Result without filter: {result}")
-
+        print(full_conditions)
         result = 0
         for var, l in full_conditions.items():
-            res = 1
-            for mini, maxi in l:
-                res *= (maxi-mini)
-            result += res
-
-        return result
+            for ranges in l:
+                cur_range = var[1] - var[0]
+                for ran in ranges:
+                    print(var, ran)
+                    cur_range *= ran[1] - ran[0]
+                result += cur_range
+            print(cur_range, result)
+"""
+        #return result
 
 
 if __name__ == "__main__":
