@@ -89,9 +89,6 @@ class Point:
             down = puzzle[self.y + 1][self.x] == '#'
             edges += int(puzzle[self.y + 1][self.x] == '#')
 
-        if self.x in [18, 19, 20, 21] and self.y == 0:
-            print(f"Point {self}, {edges} ({left}, {right}, {down}, {top})")
-
         return ((right and down) or
                 (down and left) or (down and right) or
                 (top and left) or (top and right) or 
