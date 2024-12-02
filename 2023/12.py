@@ -3,6 +3,7 @@
 from pathlib import Path
 import sys
 from itertools import combinations
+from functools import cache
 
 FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
@@ -41,7 +42,10 @@ def get_permutations(springs, damaged):
 
     return len(results)
 
+@cache
 def get_permutations_rec(springs, damaged, curr_damaged_size):
+    """ we move character by character """
+    # Search over, where are we?
     if not springs:
         if not curr_damaged_size and not damaged:
             return 1
@@ -49,10 +53,10 @@ def get_permutations_rec(springs, damaged, curr_damaged_size):
             return 1
         return 0
 
-    spring = springs[0]
-    springs = springs[1::]
+    spring, springs = springs[0], springs[1::]
     current_damaged = damaged[0] if damaged else 0
     next_damaged = damaged[1::] if len(damaged) > 1 else []
+    next_damaged = tuple(next_damaged)
 
     if spring == '.':
         if curr_damaged_size == 0:
@@ -64,28 +68,23 @@ def get_permutations_rec(springs, damaged, curr_damaged_size):
     if spring == '#':
         if curr_damaged_size > current_damaged:
             return 0
-        else:
-            return get_permutations_rec(springs, damaged, curr_damaged_size + 1)
+
+        return get_permutations_rec(springs, damaged, curr_damaged_size + 1)
 
     if spring == '?':
         return get_permutations_rec('#'+springs, damaged, curr_damaged_size) + get_permutations_rec('.'+springs, damaged, curr_damaged_size)
+
 
 def solution_part1(filename):
     """ PART 1
     """
     with open(filename, "r", encoding="utf-8") as file:
-        spring_records = {}
+        result = 0
         for _line in file:
             line = _line.rstrip()
             springs, damaged = line.split()
-            spring_records[springs] = list(map(int, damaged.split(',')))
-
-        result = 0
-        for springs, damaged in spring_records.items():
-            #print(springs, damaged)
-            permutations = get_permutations_rec(springs, damaged, 0)
-            print(permutations, springs, damaged)
-            result += permutations
+            damaged = tuple(map(int, damaged.split(',')))
+            result += get_permutations_rec(springs, damaged, 0)
 
         return result
 
@@ -94,8 +93,15 @@ def solution_part2(filename):
     """ PART 2
     """
     with open(filename, "r", encoding="utf-8") as file:
+        result = 0
         for _line in file:
             line = _line.rstrip()
+            springs, damaged = line.split()
+            springs = '?'.join([springs] * 5)
+            damaged = tuple(map(int, damaged.split(','))) * 5
+            result += get_permutations_rec(springs, damaged, 0)
+
+        return result
 
 
 if __name__ == "__main__":
