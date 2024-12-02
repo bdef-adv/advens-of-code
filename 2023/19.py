@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 
 from collections import defaultdict
+from copy import deepcopy
 
 INPUT_PATH = str(Path(__file__).parent.resolve()) + '/inputs'
 FILENAME = sys.argv[0]
@@ -45,40 +46,18 @@ def get_negative_condition(condition):
         val = int(val) + 1
         return f"{var}<{val}"
 
-def get_paths_to_A(workflows, conditions=[], workflow='in'):
-    """ Get all the conditions possible to go from 'in' to 'A' """
-    if workflow == "A":
-        return conditions
-    if workflow == "R":
-        return []
-
-    curr_workflow = workflows[workflow]
-    steps = curr_workflow.split(',')
-
-    last_destination = steps[-1]
-    last_dest_index = len(steps) - 2
-
-    neg_conditions = []
-    curr_conditions = []
-    for index, step in enumerate(steps[:-1]):
-        condition, destination = step.split(':')
-        neg_conditions.append(get_negative_condition(condition))
-        curr_conditions.append(get_paths_to_A(workflows, conditions+[condition], destination))
-    curr_conditions.append(get_paths_to_A(workflows, conditions + neg_conditions, last_destination))
-    return curr_conditions
-
-def range_from_conditions(conditions):
-    ranges = {"x": [1, 4000], "m": [1, 4000], "a": [1, 4000], "s": [1, 4000]}
+def range_from_conditions(conditions, ranges):
+    new_range = deepcopy(ranges)
     for condition in conditions:
         if '<' in condition:
             var, val = condition.split('<')
-            ranges[var] = [ranges[var][0], min(ranges[var][1], int(val)-1)]
+            new_range[var] = sorted([ranges[var][0], min(ranges[var][1], int(val)-1)])
         if '>' in condition:
             var, val = condition.split('>')
-            ranges[var] = [max(ranges[var][0], int(val)+1), ranges[var][1]]
-    return ranges
+            new_range[var] = sorted([max(ranges[var][0], int(val)+1), ranges[var][1]])
+    return new_range
 
-def calculate_range(ran, start):
+def _calculate_range(ran, start):
     diffs = []
     for var, val in ran.items():
         curr = val[1] - val[0] + 1
@@ -86,7 +65,13 @@ def calculate_range(ran, start):
             diffs.append(curr)
     return start // 4000 * sum(diffs)
 
-def get_all_paths(workflows, workflow='in', start=4000*4000*4000*4000):
+def calculate_range(ran, start):
+    return ((ran["x"][1] - ran["x"][0] + 1) *
+            (ran["m"][1] - ran["m"][0] + 1) *
+            (ran["a"][1] - ran["a"][0] + 1) *
+            (ran["s"][1] - ran["s"][0] + 1))
+
+def get_all_paths(workflows, workflow='in', start=4000*4000*4000*4000, ranges={"x": [1, 4000], "m": [1, 4000], "a": [1, 4000], "s": [1, 4000]}, indent=0):
     """ Get all the conditions possible to go from 'in' to 'A' """
     if workflow in ["A", "R"]:
         return {workflow: start}
@@ -102,18 +87,25 @@ def get_all_paths(workflows, workflow='in', start=4000*4000*4000*4000):
         condition, destination = step.split(':')
         conditions[destination].append(condition)
 
+    print(f"{indent*'  ' }// Ranges={ranges}")
+
     for destination, conditions in conditions.items():
-        curr_range = calculate_range(range_from_conditions(conditions), remainder)
-        nodes[destination] = curr_range
-        remainder -= curr_range
+        curr_range = range_from_conditions(conditions, ranges)
+        diff = calculate_range(curr_range, remainder)
+        print(f"{indent*'  '}// {workflow} Calculating {destination} with {conditions} => {curr_range} (diff={diff}) current remainder={remainder} next={remainder-diff}")
+        nodes[destination] = (diff, curr_range)
+        remainder -= diff
 
 
-    print(f"{workflow} [{remainder}] {last_destination}")
+    print(f"{indent*'  '}{workflow} [{remainder}] {last_destination}")
     for dest, val in nodes.items():
-        print(f"{workflow} [{val}] {dest}")
+        val, ran = val
+        print(f"{indent*'  '}{workflow} [{val}] {dest}")
+        nodes = dict(nodes, **get_all_paths(workflows, dest, val, ran, indent+1))
+
+    nodes = dict(nodes, **get_all_paths(workflows, last_destination, remainder, ranges, indent+1))
 
     nodes[last_destination] = remainder
-    print()
     return nodes
 
 
@@ -166,10 +158,10 @@ def solution_part2(filename):
                 break
         
         destinations = get_all_paths(workflows)
-
-        for destination, start in destinations.items():
-            print(f"Calculating {destination} with start={start}")
-            destinations = get_all_paths(workflows, destination, start)
+        print(destinations)
+        #for destination, start in destinations.items():
+        #    print(f"Calculating {destination} with start={start}")
+        #    destinations = get_all_paths(workflows, destination, start)
 
 
 """
