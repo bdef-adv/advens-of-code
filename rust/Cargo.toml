@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 chrono = { version = "0.4.38", features = ["now"] }
 clap = { version = "4.0", features = ["derive"] }
+regex = "1.11.1"
