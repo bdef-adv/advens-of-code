@@ -11,6 +11,8 @@ struct Args {
     day: u8,
     #[arg(short, long, default_value_t = 2024)]
     year: u16,
+    #[arg(short, long, default_value_t = false)]
+    test: bool,
 }
 
 
@@ -19,7 +21,7 @@ fn main() {
     let mut day: u8 = args.day;
 
     let timer: Instant = Instant::now();
-    let (part_one, part_two): (i32, i32) = years::run_day(&mut day, args.year);
+    let (part_one, part_two): (i32, i32) = years::run_day(&mut day, args.year, args.test);
 
     println!("Part 01: {part_one}\nPart 02: {part_two}");
 

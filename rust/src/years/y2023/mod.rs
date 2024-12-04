@@ -2,8 +2,8 @@ mod day01;
 use crate::utils;
 
 
-pub fn run_day(day: &mut u8) -> (i32, i32) {
-    let contents = utils::get_day_input_content(day, 2023);
+pub fn run_day(day: &mut u8, test: bool) -> (i32, i32) {
+    let contents = utils::get_day_input_content(day, 2023, test);
 
     println!("Running day {day} of year 2023");
 

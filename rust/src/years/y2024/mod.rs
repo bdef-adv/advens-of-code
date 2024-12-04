@@ -2,11 +2,12 @@ mod day01;
 mod day02;
 mod day03;
 mod day04;
+mod day05;
 use crate::utils;
 
 
-pub fn run_day(day: &mut u8) -> (i32, i32) {
-    let contents = utils::get_day_input_content(day, 2024);
+pub fn run_day(day: &mut u8, test: bool) -> (i32, i32) {
+    let contents = utils::get_day_input_content(day, 2024, test);
 
     println!("Running day {day} of year 2024");
 
@@ -25,6 +26,10 @@ pub fn run_day(day: &mut u8) -> (i32, i32) {
         },
         4 => {
             let results = day04::get_day_results(&contents.to_string());
+            utils::unsigned_to_signed(&results)
+        },
+        5 => {
+            let results = day05::get_day_results(&contents.to_string());
             utils::unsigned_to_signed(&results)
         },
         _ => {

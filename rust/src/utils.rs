@@ -13,13 +13,13 @@ pub fn read_file(file_path: &str) -> io::Result<String> {
     Ok(contents)
 }
 
-pub fn get_day_input_content(day: &mut u8, year: u16) -> String {
+pub fn get_day_input_content(day: &mut u8, year: u16, test: bool) -> String {
     if *day == 0 {
         let date: u32 = Utc::now().day();
         *day = date.try_into().unwrap();
     }
 
-    let file_name = format!("data/inputs/{year}/day{day:02}.txt");
+    let file_name = format!("data/inputs/{year}/day{day:02}{}.txt", if test {".test"} else {""});
     match read_file(&file_name) {
         Ok(contents) => {
             return contents;
