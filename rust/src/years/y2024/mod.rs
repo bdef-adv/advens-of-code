@@ -4,6 +4,7 @@ mod day03;
 mod day04;
 mod day05;
 mod day06;
+mod day07;
 use crate::utils;
 
 
@@ -35,6 +36,10 @@ pub fn run_day(day: &mut u8, test: bool) -> (i32, i32) {
         },
         6 => {
             let results = day06::get_day_results(&contents.to_string());
+            utils::unsigned_to_signed(&results)
+        },
+        7 => {
+            let results = day07::get_day_results(&contents.to_string());
             utils::unsigned_to_signed(&results)
         },
         _ => {
