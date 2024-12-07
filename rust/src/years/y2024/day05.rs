@@ -61,7 +61,7 @@ fn fix_page_update_order(ordering: &HashMap<u32, Vec<u32>>, page_update: &Vec<u3
 }
 
 
-fn solve_day(file_contents: &str) -> (u32, u32) {
+fn solve_day(file_contents: &str) -> (u64, u64) {
     /*
         Part 1
      */
@@ -95,11 +95,11 @@ fn solve_day(file_contents: &str) -> (u32, u32) {
         }
     }
 
-    return (sum_part1, sum_part2);
+    return (sum_part1 as u64, sum_part2 as u64);
 }
 
 
-pub fn get_day_results(file_contents: &str) -> (u32, u32) {
+pub fn get_day_results(file_contents: &str) -> (u64, u64) {
     /*
         Return this day's results as a tuple
      */

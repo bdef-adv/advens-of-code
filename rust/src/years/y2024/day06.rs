@@ -120,7 +120,7 @@ fn find_obstacles(maze: &mut Vec<Vec<char>>, guard: &mut Guard, init_position: &
 }
 
 
-fn solve_day(file_contents: &str) -> (u32, u32) {
+fn solve_day(file_contents: &str) -> (u64, u64) {
     /*
         Part 1
      */
@@ -151,11 +151,11 @@ fn solve_day(file_contents: &str) -> (u32, u32) {
     let init_position = (guard.x, guard.y);
     let sum_part1 = move_guard_through_maze(&mut maze, &mut guard);
     let sum_part2 = find_obstacles(&mut maze, &mut guard, &init_position);
-    (sum_part1, sum_part2)
+    (sum_part1 as u64, sum_part2 as u64)
 }
 
 
-pub fn get_day_results(file_contents: &str) -> (u32, u32) {
+pub fn get_day_results(file_contents: &str) -> (u64, u64) {
     /*
         Return this day's results as a tuple
      */
