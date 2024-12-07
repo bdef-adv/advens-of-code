@@ -2,7 +2,7 @@ mod y2023;
 mod y2024;
 
 
-pub fn run_day(day: &mut u8, year: u16, test: bool) -> (i64, i64) {
+pub fn run_day(day: &mut u8, year: u16, test: bool) -> (String, String) {
     match year {
         2023 => {
             y2023::run_day(day, test)

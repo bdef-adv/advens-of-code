@@ -99,9 +99,10 @@ fn solve_day(file_contents: &str) -> (u64, u64) {
 }
 
 
-pub fn get_day_results(file_contents: &str) -> (u64, u64) {
+pub fn get_day_results(file_contents: &str) -> (String, String) {
     /*
         Return this day's results as a tuple
      */
-    solve_day(&file_contents)
+    let results = solve_day(&file_contents);
+    (format!("{}", results.0), format!("{}", results.1))
 }

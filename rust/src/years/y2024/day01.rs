@@ -64,9 +64,9 @@ fn part02(file_contents: &str) -> u32 {
     return sum;
 }
 
-pub fn get_day_results(file_contents: &str) -> (u64, u64) {
+pub fn get_day_results(file_contents: &str) -> (String, String) {
     /*
         Return this day's results as a tuple
      */
-    (part01(&file_contents).try_into().unwrap(), part02(&file_contents).try_into().unwrap())
+    (format!("{}", part01(&file_contents)), format!("{}", part02(&file_contents)))
 }
