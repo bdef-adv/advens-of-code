@@ -2,6 +2,7 @@ use clap::Parser;
 use std::time::Instant;
 mod utils;
 mod years;
+pub mod classes;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
