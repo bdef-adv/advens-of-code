@@ -15,8 +15,9 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
+    let mut day = args.day;
 
-    let (part_one, part_two): (i32, i32) = years::run_day(args.day, args.year);
+    let (part_one, part_two): (i32, i32) = years::run_day(&mut day, args.year);
 
     println!("Part 01: {part_one}\nPart 02: {part_two}")
 }
