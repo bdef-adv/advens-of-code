@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 from functools import cache
 
+INPUT_PATH = str(Path(__file__).parent.resolve()) + '/inputs'
 FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
 FILENAME_PART2_EXT = ""
@@ -39,8 +40,8 @@ def get_permutations_rec(springs, damaged, curr_damaged_size):
 
         return get_permutations_rec(springs, damaged, curr_damaged_size + 1)
 
-    if spring == '?':
-        return get_permutations_rec('#'+springs, damaged, curr_damaged_size) + get_permutations_rec('.'+springs, damaged, curr_damaged_size)
+    return (get_permutations_rec('#'+springs, damaged, curr_damaged_size) +
+            get_permutations_rec('.'+springs, damaged, curr_damaged_size))
 
 
 def solution_part1(filename):
@@ -75,14 +76,14 @@ def solution_part2(filename):
 if __name__ == "__main__":
     print("--- Part One ---")
     print("Test result:")
-    print(solution_part1(f"input.{FILENAME_TRUNC}.test.txt"))
+    print(solution_part1(f"{INPUT_PATH}/input.{FILENAME_TRUNC}.test.txt"))
 
     print("Result:")
-    print(solution_part1(f"input.{FILENAME_TRUNC}.txt"))
+    print(solution_part1(f"{INPUT_PATH}/input.{FILENAME_TRUNC}.txt"))
 
     print("--- Part Two ---")
     print("Test result:")
-    print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.test.txt"))
+    print(solution_part2(f"{INPUT_PATH}/input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.test.txt"))
 
     print("Result:")
-    print(solution_part2(f"input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.txt"))
+    print(solution_part2(f"{INPUT_PATH}/input.{FILENAME_TRUNC}{FILENAME_PART2_EXT}.txt"))
