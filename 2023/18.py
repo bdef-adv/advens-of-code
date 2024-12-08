@@ -49,13 +49,6 @@ class Point:
             return Point(self.y * other, self.x * other)
         return Point(self.y * other.y, self.x * other.x)
 
-    def in_map(self, paths):
-        """ Method to check if the point is inside the map or not """
-        if (self.y, self.x) in paths:
-            return False
-        polygon = shapely.geometry.Polygon(paths)
-        return polygon.contains(shapely.geometry.Point(self.y, self.x))
-
     def in_map_puzzle(self, puzzle):
         """ how many edges on one side """
         edges_after_point = 0
@@ -66,8 +59,12 @@ class Point:
                 edges_after_point += 1
 
         #print(self, edges_after_point)
-        dedupe = dedupe_adjacent(puzzle[self.y][self.x+1:])
-        return (edges_after_point % 2 != 0) or (dedupe.count('#') % 2 != 0 and dedupe != ['.', '#', '.'])
+        dedupe_right = dedupe_adjacent(puzzle[self.y][self.x+1:])
+        dedupe_left = dedupe_adjacent(puzzle[self.y][:self.x:])
+        gaps_right = puzzle[self.y][self.x+1:''.join(puzzle[self.y][self.x+1::]).rfind('#')].count('.') == 1
+        #print(f"{self} => edges={edges_after_point}, gaps_right={gaps_right}, dedupe={dedupe_left},{dedupe_right}")
+        return ((edges_after_point % 2 != 0) or
+                (dedupe_right.count('#') % 2 != 0 and (dedupe_left.count('#') == dedupe_right.count('#'))))
 
     def is_wall(self, puzzle):
         """ count number of '#' adjacent to current position """
@@ -95,7 +92,7 @@ class Point:
         if self.x in [18, 19, 20, 21] and self.y == 0:
             print(f"Point {self}, {edges} ({left}, {right}, {down}, {top})")
 
-        return ((right and down) or (right and top) or
+        return ((right and down) or
                 (down and left) or (down and right) or
                 (top and left) or (top and right) or 
                 (left and down) or (left and top) or
@@ -202,7 +199,7 @@ def solution_part1(filename):
             digmap[y] += '.'
 
         display_map(digmap)
-        edges = get_edges(digmap, digpos)
+        edges = [] #get_edges(digmap, digpos)
         digmap = dig_that_shit_homes(digmap, edges)
         display_map(digmap)
         return count_holes(digmap)
