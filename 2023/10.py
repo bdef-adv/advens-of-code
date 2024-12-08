@@ -44,53 +44,37 @@ class Maze:
         if direction == (-1, 0): # If we were going up '|'
             if curr_char == '|':
                 return direction
-            if curr_char == '-':
-                return None
-            if curr_char == 'L':
-                return None
-            if curr_char == 'J':
+            if curr_char in '-LJ':
                 return None
             if curr_char == '7':
                 return (0, -1)
             if curr_char == 'F':
                 return (0, 1)
         elif direction == (0, 1): # if we were going right '-', 'F', 'L'
-            if curr_char == '|':
+            if curr_char in '|LF':
                 return None
             if curr_char == '-':
                 return direction
-            if curr_char == 'L':
-                return None
             if curr_char == 'J':
                 return (-1, 0)
             if curr_char == '7':
                 return (1, 0)
-            if curr_char == 'F':
-                return None
         elif direction == (1, 0): # If we were going down '|'
             if curr_char == 'L':
                 return (0, 1)
             if curr_char == 'J':
                 return (0, -1)
-            if curr_char == '7':
-                return None
-            if curr_char == 'F':
+            if curr_char in '7F-':
                 return None
             if curr_char == '|':
                 return direction
-            if curr_char == '-':
-                return None
         elif direction == (0, -1): # if we were going left '-', '7', 'J'
             if curr_char == 'L':
                 return (-1, 0)
-            if curr_char == 'J':
-                return None
-            if curr_char == '7':
+            if curr_char == 'J7|':
                 return None
             if curr_char == 'F':
                 return (1, 0)
-            if curr_char == '|':
-                return None
             if curr_char == '-':
                 return direction
 
