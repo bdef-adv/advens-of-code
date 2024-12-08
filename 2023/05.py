@@ -45,8 +45,6 @@ def solution_part1(filename):
                     elif not seed_data[seed][r]:
                         seed_data[seed][r] = seed
 
-        print(seed_data)
-
         min_location = None
         for seed, data in seed_data.items():
             if not min_location:
@@ -62,9 +60,49 @@ def solution_part2(filename):
     """ PART 2
     """
     with open(filename, "r", encoding="utf-8") as file:
+        seeds = []
+        convert_maps = {}
+        current_map = ""
         for _line in file:
             line = _line.rstrip()
+            if not seeds and line.startswith("seeds:"):
+                seeds = list(map(int, line.split("seeds: ")[1].split()))
+            if not line:
+                current_map = ""
+                continue
+            if seeds:
+                if line.endswith("map:"):
+                    current_map = line.split()[0]
+                    convert_maps[current_map] = []
+                elif current_map:
+                    convert_maps[current_map].append(list(map(int, line.split())))
 
+        from progressbar import progressbar
+
+        done = set()
+        min_location = None
+        for i in range(0, len(seeds), 2):
+            for seed in progressbar(range(seeds[i], seeds[i]+seeds[i+1])):
+                if seed in done:
+                    continue
+                data = {"soil": None, "fertilizer": None, "water": None, "light": None, "temperature":None, "humidity": None, "location": None}
+                for name, convert_map in convert_maps.items():
+                    l, r = name.split("-to-")
+                    for m in convert_map:
+                        dest_range_start, src_range_start, range_len = m
+
+                        s = data[l] if l in data and data[l] else seed
+                        if src_range_start <= s < src_range_start + range_len:
+                            data[r] = dest_range_start + (s - src_range_start)
+                        elif l in data and not data[r]:
+                            data[r] = s
+                        elif not data[r]:
+                            data[r] = seed
+
+                min_location = data["location"] if not min_location else min(data["location"], min_location)
+                done.add(seed)
+            
+        return min_location
 
 if __name__ == "__main__":
     print("--- Part One ---")
