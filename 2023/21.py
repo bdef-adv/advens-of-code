@@ -49,40 +49,6 @@ DIRECTION_TO_STR = {
 }
 STR_TO_DIRECTION = {r: l for l, r in DIRECTION_TO_STR.items()}
 
-def go_in_direction(puzzle, position, direction, steps=0, positions=[], already_visited_twice=[]):
-    #print(f"At {position} Going {DIRECTION_TO_STR[direction]} (steps={steps}) (positions={positions})")
-    if steps == 6:
-        return positions + [position]
-
-    if position in already_visited_twice:
-        return []
-
-
-    if position in positions:
-        already_visited_twice.append(position)
-
-    next_pos = position + direction
-    next_char = puzzle[next_pos.y][next_pos.y]
-    if next_char == '#':
-        return []
-
-    possible_directions = []
-    for direction in STR_TO_DIRECTION:
-        nextpos = position + STR_TO_DIRECTION[direction]
-        if puzzle[nextpos.y][nextpos.x] == '.':
-            possible_directions.append(direction)
-
-    for direction in possible_directions:
-        positions += list(go_in_direction(puzzle, next_pos, STR_TO_DIRECTION[direction], steps + 1, positions, already_visited_twice))
-
-    return positions
-
-def display_map(puzzle):
-    import os 
-    os.system('clear')
-    for y in puzzle:
-        print(y)
-
 
 def get_positions(puzzle, position, steps):
     positions = set()
