@@ -19,9 +19,15 @@ def get_reflections(puzzle):
         bottom = puzzle[i:]
 
         count = 0
+        # compare each motherfucking line
+        # top row #0 == bottom row #-1
+        # top row #1 == bottom row #-2
         for tr, br in list(zip(top, bottom)):
+            # if top row #0 == bottom row #-1
+            # we count
             if tr == br:
                 count += 1
+        # if the number of equal lines reaches the stupid fucking dumbass edge
         if count in [len(top), len(bottom)]:
             return i
 
@@ -62,12 +68,8 @@ def solution_part1(filename):
         for inp in inputs:
             inpverted = list(zip(*inp))
 
-            horizontal = get_reflections(inp)
-            vertical = get_reflections(inpverted)
-            if horizontal > vertical:
-                results += horizontal * 100
-            else:
-                results += vertical
+            results += get_reflections(inp) * 100
+            results += get_reflections(inpverted)
 
         return results
 
