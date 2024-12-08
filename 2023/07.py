@@ -8,7 +8,7 @@ FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
 FILENAME_PART2_EXT = ""
 
-SCORING = "AKQJT98765432J" #['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
+SCORING = "AKQT98765432J" #['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 RANK = {"five of a kind": 6, "four of a kind": 5, "full house": 4, "three of a kind": 3, "two pairs": 2, "one pair": 1, "high card": 0}
 
 def compare_cards(hand1, hand2):
@@ -112,25 +112,13 @@ def solution_part2(filename):
 
             count_cards_list = sorted(count_cards.items(), key=cmp_to_key(compare_counts))
 
-            debug = False
-            if jokers:
-                debug = True
-                print(cards, count_cards_list, jokers)
-
-            len_counts = len(count_cards_list)
             score = ""
             pairs = []
             threes = []
-            most_count = count_cards_list[0][1]
-            next_most = 0 if len_counts == 1 else count_cards_list[1][1]
-            if len_counts == 5 or (len_counts == 4 and count_cards_list[0][1] != 2 and not jokers):
-                score = "high card"
-            elif len_counts == 4 and not jokers:
-                score = "one pair"
-            elif len_count == 4 and jokers == 1:
-                score = "three of a kind"
-            elif len_count == 3 and not jokers:
-                score = ""
+
+            if jokers == 5:
+                score = "five of a kind"
+
             for card, count in count_cards_list:
                 if count == 5:
                     score = "five of a kind"
@@ -191,16 +179,11 @@ def solution_part2(filename):
                 score = "one pair"
             elif not score:
                 score = "high card"
-
-            if debug:
-                print(score)
             hands.append((cards, RANK[score], int(bid)))
         score = 0
         hands = sorted(hands, key=cmp_to_key(compare_cards))
         for x, hand in enumerate(hands):
             score += hand[2] * (x+1)
-
-        print(hands)
 
         return score
 
