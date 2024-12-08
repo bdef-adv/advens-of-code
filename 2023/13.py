@@ -13,114 +13,57 @@ def display_map(array):
 
 def get_reflections(puzzle):
     """ return largest reflection in puzzle based on mirror indexes """
-    reflections = []
-    indexes = []
-    len_puzzle = len(puzzle)
+    for i in range(1, len(puzzle)):
+        # halve the fuckers
+        top = puzzle[:i][::-1]
+        bottom = puzzle[i:]
 
-    # find mirror positions
-    last_line = puzzle[0]
-    for y, line in enumerate(puzzle[1::]):
-        if line == last_line:
-            indexes.append(y + 1)
-        last_line = line
-
-    for index in indexes:
         count = 0
-        valid = False
-        i = index - 1
-        for y, line in enumerate(puzzle[index - 1::-1]):
-            if index + y >= len_puzzle:
+        for tr, br in list(zip(top, bottom)):
+            if tr == br:
                 count += 1
-                valid = True
-            elif line == puzzle[index + y]:
-                count += 1
-                if i == 0:
-                    valid = True
-            else:
-                break
-            i -= 1
-        if valid:
-            reflections.append(count)
+        if count in [len(top), len(bottom)]:
+            return i
 
-    if not reflections:
-        return 0
-    return min(reflections)
+    return 0
 
-def get_reflections_bruteforce(puzzle):
+def get_reflections_smudged(puzzle):
     """ return largest reflection in puzzle based on mirror indexes """
-    vertical_map = list(zip(*puzzle))
+    for i in range(1, len(puzzle)):
+        # halve the fuckers
+        top = puzzle[:i][::-1]
+        bottom = puzzle[i:]
 
-    base_reflection = get_reflections(puzzle)
-    base_reflection_vert = get_reflections(vertical_map)
+        count = 0
+        # compare each motherfucking line
+        # top row #0 == bottom row #-1
+        # top row #1 == bottom row #-2
+        for tr, br in list(zip(top, bottom)):
+            # compare top char #0 == bottom char #-1
+            # if we see a difference we count it
+            for tc, bc in list(zip(tr, br)):
+                if tc != bc:
+                    count += 1
+        # only one difference, we found the stupid smudge and the reflection is the
+        # only possible reflection
+        if count == 1:
+            return i
 
-    for y, line in enumerate(puzzle):
-        for x, ch in enumerate(line):
-            new_puzzle_horiz = [[x for x in y] for y in puzzle]
-            new_puzzle_vert = [[x for x in y] for y in vertical_map]
-            if ch == '.':
-                new_puzzle_horiz[y][x] = '#'
-            elif ch == '#':
-                new_puzzle_horiz[y][x] = '.'
-
-            if vertical_map[x][y] == '.':
-                new_puzzle_vert[x][y] = '#'
-            elif vertical_map[x][y] == '#':
-                new_puzzle_vert[x][y] = '.'
-
-            new_puzzle_horiz = [''.join(_line) for _line in new_puzzle_horiz]
-            new_puzzle_vert = [''.join(_line) for _line in new_puzzle_vert]
-            
-            new_reflection_horiz = get_reflections(new_puzzle_horiz)
-            new_reflection_vert = get_reflections(new_puzzle_vert)
-
-            #print(f"New reflections: {new_reflection_horiz},{new_reflection_vert} (base={base_reflection},{base_reflection_vert}) (Line={new_puzzle_horiz[y]};vert={new_puzzle_vert[x]})")
-
-            if new_reflection_horiz and new_reflection_horiz != base_reflection:
-                #print(f"Horizontal new_reflection found: {new_reflection_horiz} vs {base_reflection}")
-                return new_reflection_horiz * 100
-            elif new_reflection_vert and new_reflection_vert != base_reflection_vert:
-                #print(f"Vertical new_reflection found: {new_reflection_vert} vs {base_reflection_vert}")
-                return new_reflection_vert
-
-    if base_reflection > base_reflection_vert:
-        return base_reflection * 100
-    else:
-        return base_reflection_vert
+    return 0
 
 
 def solution_part1(filename):
     """ PART 1
     """
     with open(filename, "r", encoding="utf-8") as file:
-        inputs = []
-        curr_input = []
-        for _line in file:
-            line = _line.rstrip()
-            if line:
-                curr_input.append(line)
-            else:
-                inputs.append(curr_input)
-                curr_input = []
-        if curr_input:
-            inputs.append(curr_input)
+        inputs = [l.splitlines() for l in file.read().split('\n\n')]
 
         results = 0
-        nb_inputs = len(inputs)
-        for index in range(0, nb_inputs):
-            left = inputs[index]
-            vertical_map = ["" for i in range(len(left[0]))]
+        for inp in inputs:
+            inpverted = list(zip(*inp))
 
-            horizontal_found = []
-            last_horizontal = left[0]
-            for y, line in enumerate(left):
-                if line == last_horizontal and y != 0:
-                    horizontal_found.append(y)
-                last_horizontal = line
-                for x, ch in enumerate(line):
-                    vertical_map[x] += ch
-
-            horizontal = get_reflections(left)
-            vertical = get_reflections(vertical_map)
+            horizontal = get_reflections(inp)
+            vertical = get_reflections(inpverted)
             if horizontal > vertical:
                 results += horizontal * 100
             else:
@@ -129,42 +72,16 @@ def solution_part1(filename):
         return results
 
 
-
 def solution_part2(filename):
     """ PART 2
     """
     with open(filename, "r", encoding="utf-8") as file:
-        inputs = []
-        curr_input = []
-        for _line in file:
-            line = _line.rstrip()
-            if line:
-                curr_input.append(line)
-            else:
-                inputs.append(curr_input)
-                curr_input = []
-        if curr_input:
-            inputs.append(curr_input)
+        inputs = [l.splitlines() for l in file.read().split('\n\n')]
 
         results = 0
-        count = 0
-        nb_inputs = len(inputs)
-        for index in range(0, nb_inputs):
-            left = inputs[index]
-            vertical_map = ["" for i in range(len(left[0]))]
-
-            horizontal_found = []
-            last_horizontal = left[0]
-            for y, line in enumerate(left):
-                if line == last_horizontal and y != 0:
-                    horizontal_found.append(y)
-                last_horizontal = line
-                for x, ch in enumerate(line):
-                    vertical_map[x] += ch
-
-            #print("---")
-            #print("Horizontal:")
-            results += get_reflections_bruteforce(left)
+        for puzzle in inputs:
+            results += get_reflections_smudged(puzzle) * 100
+            results += get_reflections_smudged(list(zip(*puzzle)))
 
         return results
 
