@@ -6,6 +6,7 @@ import operator
 from collections import defaultdict
 import re
 
+INPUT_PATH = str(Path(__file__).parent.resolve()) + '/inputs'
 FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
 FILENAME_PART2_EXT = ""
@@ -94,7 +95,7 @@ def solution_part1(filename):
 if __name__ == "__main__":
     print("--- Part One ---")
     print("Test result:")
-    print(solution_part1(f"input.{FILENAME_TRUNC}.test.txt"))
+    print(solution_part1(f"{INPUT_PATH}/input.{FILENAME_TRUNC}.test.txt"))
 
     print("Result:")
-    print(solution_part1(f"input.{FILENAME_TRUNC}.txt"))
+    print(solution_part1(f"{INPUT_PATH}/input.{FILENAME_TRUNC}.txt"))
