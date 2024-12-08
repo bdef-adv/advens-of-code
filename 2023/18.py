@@ -14,15 +14,6 @@ FILENAME_PART2_EXT = ""
 
 INPUT_RE = re.compile(r"^([LRDU]) ([0-9]+) \(#([0-9a-f]+)\)$")
 
-def dedupe_adjacent(alist):
-    alist = list(alist)
-    for i in range(len(alist) - 1, 0, -1):
-        if alist[i] == alist[i-1]:
-            del alist[i]
-    return alist
-
-POLYGON = None
-
 class Point:
     """ Defines a 2D point """
     def __init__(self, y, x=None):
@@ -67,7 +58,6 @@ STR_TO_DIRECTION = {r: l for l, r in DIRECTION_TO_STR.items()}
 def solution_part1(filename):
     """ PART 1
     """
-    global POLYGON
     with open(filename, "r", encoding="utf-8") as file:
         digpos = [Point(0, 0)]
         max_x = 0
@@ -90,13 +80,12 @@ def solution_part1(filename):
                 digpos.append(position)
 
         edges = [(p.y, p.x) for p in digpos] 
-        POLYGON = shapely.geometry.Polygon(edges)
-        return int(abs(POLYGON.area) + POLYGON.length/2 + 1)
+        polygon = shapely.geometry.Polygon(edges)
+        return int(abs(polygon.area) + polygon.length/2 + 1)
 
 def solution_part2(filename):
     """ PART 2
     """
-    global POLYGON
     with open(filename, "r", encoding="utf-8") as file:
         digpos = [Point(0,0)]
         max_x = 0
@@ -118,8 +107,8 @@ def solution_part2(filename):
                 digpos.append(position)
 
         edges = [(p.y, p.x) for p in digpos] 
-        POLYGON = shapely.geometry.Polygon(edges)
-        return int(abs(POLYGON.area) + POLYGON.length/2 + 1)
+        polygon = shapely.geometry.Polygon(edges)
+        return int(abs(polygon.area) + polygon.length/2 + 1)
 
 if __name__ == "__main__":
     print("--- Part One ---")
