@@ -54,17 +54,17 @@ def solution_part2(filename):
                 if left.endswith('A'):
                     starting_nodes.append(left)
 
-        steps = [0 for i in range(len(starting_nodes))]
         nodes = starting_nodes
         result = 1
         for x, node in enumerate(nodes):
+            steps = 0
             position = node
             while position[-1] != "Z":
                 for ch in instruction:
-                    steps[x] += 1
+                    steps += 1
                     position = positions[position][0] if ch == 'L' else positions[position][1]
                     if position[-1] == 'Z':
-                        result = floor(result * steps[x] / gcd(result, steps[x]))
+                        result = floor(result * steps / gcd(result, steps))
                         break
 
         return result
