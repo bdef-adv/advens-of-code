@@ -79,12 +79,9 @@ def solution_part2(filename):
 
         from progressbar import progressbar
 
-        done = set()
         min_location = None
         for i in range(0, len(seeds), 2):
             for seed in progressbar(range(seeds[i], seeds[i]+seeds[i+1])):
-                if seed in done:
-                    continue
                 data = {"soil": None, "fertilizer": None, "water": None, "light": None, "temperature":None, "humidity": None, "location": None}
                 for name, convert_map in convert_maps.items():
                     l, r = name.split("-to-")
@@ -100,7 +97,6 @@ def solution_part2(filename):
                             data[r] = seed
 
                 min_location = data["location"] if not min_location else min(data["location"], min_location)
-                done.add(seed)
             
         return min_location
 
