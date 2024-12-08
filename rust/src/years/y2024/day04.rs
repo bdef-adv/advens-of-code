@@ -78,7 +78,7 @@ fn cross_occurences(array: &Vec<Vec<char>>, word: &str) -> u32 {
 }
 
 
-fn solve_day(file_contents: &str) -> (u32, u32) {
+fn solve_day(file_contents: &str) -> (u64, u64) {
     let mut array: Vec<Vec<char>> = vec![vec![]];
 
     let mut x: usize = 0;
@@ -100,11 +100,11 @@ fn solve_day(file_contents: &str) -> (u32, u32) {
     let sum_part1 = word_occurences(&array, "XMAS");
     let sum_part2 = cross_occurences(&array, "MAS");
 
-    (sum_part1, sum_part2)
+    (sum_part1 as u64, sum_part2 as u64)
 }
 
 
-pub fn get_day_results(file_contents: &str) -> (u32, u32) {
+pub fn get_day_results(file_contents: &str) -> (u64, u64) {
     /*
         Return this day's results as a tuple
      */

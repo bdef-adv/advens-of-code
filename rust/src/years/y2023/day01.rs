@@ -92,7 +92,7 @@ fn part02(file_contents: &str) -> u32 {
     return sum;
 }
 
-pub fn get_day_results(file_contents: &str) -> (u32, u32) {
+pub fn get_day_results(file_contents: &str) -> (u64, u64) {
     /*
         Return this day's results as a tuple
      */

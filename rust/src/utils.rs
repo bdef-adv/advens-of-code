@@ -2,8 +2,8 @@ use std::fs::File;
 use std::io::{self, Read};
 use chrono::prelude::*;
 
-pub fn unsigned_to_signed(src: &(u32, u32)) -> (i32, i32) {
-    return (src.0 as i32, src.1 as i32)
+pub fn unsigned_to_signed(src: &(u64, u64)) -> (i64, i64) {
+    return (src.0 as i64, src.1 as i64)
 }
 
 pub fn read_file(file_path: &str) -> io::Result<String> {
