@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+""" day 8 """
 from pathlib import Path
 import sys
 from math import gcd, floor
@@ -56,7 +56,7 @@ def solution_part2(filename):
 
         nodes = starting_nodes
         result = 1
-        for x, node in enumerate(nodes):
+        for node in nodes:
             steps = 0
             position = node
             while position[-1] != "Z":

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+""" day 7 """
 from pathlib import Path
 import sys
 from functools import cmp_to_key
@@ -8,37 +8,43 @@ FILENAME = sys.argv[0]
 FILENAME_TRUNC = Path(FILENAME).stem
 FILENAME_PART2_EXT = ""
 
-SCORING = "AKQT98765432J" #['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
-RANK = {"five of a kind": 6, "four of a kind": 5, "full house": 4, "three of a kind": 3, "two pairs": 2, "one pair": 1, "high card": 0}
+SCORING = "AKQT98765432J"
+RANK = {"five of a kind": 6,
+        "four of a kind": 5,
+        "full house": 4,
+        "three of a kind": 3,
+        "two pairs": 2,
+        "one pair": 1,
+        "high card": 0}
 
 def compare_cards(hand1, hand2):
+    """ compare hands """
     if hand1[1] < hand2[1]:
         return -1
-    elif hand1[1] > hand2[1]:
+    if hand1[1] > hand2[1]:
         return 1
-    
+
     for x, ch in enumerate(hand1[0]):
         lindex, rindex = SCORING.find(ch), SCORING.find(hand2[0][x])
         if lindex > rindex:
             return -1
-        elif lindex < rindex:
+        if lindex < rindex:
             return 1
-        else:
-            continue
 
     return 0
 
 def compare_counts(hand1, hand2):
+    """ compare counts """
     lindex, rindex = hand1[1], hand2[1]
     if lindex < rindex:
         return 1
-    elif lindex > rindex:
+    if lindex > rindex:
         return -1
 
     lindex, rindex = SCORING.find(hand1[0]), SCORING.find(hand2[0])
     if lindex < rindex:
         return 1
-    elif lindex > rindex:
+    if lindex > rindex:
         return -1
     return 0
 
