@@ -15,48 +15,43 @@ OPERATIONS = {"AND": operator.and_,
               "LSHIFT": operator.lshift,
               "RSHIFT": operator.rshift}
 
-RESULTS = {}
-
-def calculate(wires, key):
+def calculate(wires, key, results={}):
     """ recursive function to calculate results """
     operation, left, right = wires[key]
 
-    #print(f"\rcalculating {key} => {left} {operation} {right}", end="")
-
     if operation == "IS":
         if left.isdigit():
-            RESULTS[left] = int(left)
             return int(left)
-        if left in RESULTS:
-            return RESULTS[left]
+        if left in results:
+            return results[left]
 
-        return calculate(wires, left)
+        return calculate(wires, left, results)
 
     if operation == "NOT":
         if left.isdigit():
             return ~int(left)
-        if left in RESULTS:
-            return ~RESULTS[left]
+        if left in results:
+            return ~results[left]
 
-        return ~calculate(wires, left)
+        return ~calculate(wires, left, results)
 
     if operation in OPERATIONS:
         l, r = 0, 0
         if left.isdigit():
             l = int(left)
-        elif left in RESULTS:
-            l = RESULTS[left]
+        elif left in results:
+            l = results[left]
         else:
-            l = calculate(wires, left)
+            l = calculate(wires, left, results)
         if right.isdigit():
             r = int(right)
-        elif right in RESULTS:
-            r = RESULTS[right]
+        elif right in results:
+            r = results[right]
         else:
-            r = calculate(wires, right)
+            r = calculate(wires, right, results)
 
         res = OPERATIONS[operation](l, r)
-        RESULTS[key] = res 
+        results[key] = res
         return res
 
 
@@ -87,19 +82,11 @@ def solution_part1(filename):
                 l, operation, r = operations[0]
                 wires[right] = (operation, l, r)
 
-            #print(right, '=', wires[right])
-
         if 'a' not in wires:
             return wires
 
         part1 = calculate({k: wires[k] for k in sorted(wires)}, "a")
-
-        print(wires['b'])
-        wires['b'] = wires['a'] #("IS", str(part1), None)
-        print(wires['b'])
-        global RESULTS
-        RESULTS = []
-        part2 = calculate({k: wires[k] for k in sorted(wires)}, "a")
+        part2 = calculate({k: wires[k] for k in sorted(wires)}, "a", {"b": 3176})
         return (part1, part2)
 
 
