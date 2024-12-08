@@ -134,7 +134,7 @@ def process_inputs(destinations, start="broadcaster", pulse=False, counts=[0,0])
             if dest in destinations:
                 next_dests[dest] = dict(destinations[dest], **{"pulse": pulse})
 
-    #print("NEXT DESTS --")
+    #   print("NEXT DESTS --")
     # Parsing next inputs in case of 
     for dest in next_dests:
         if dest == start:
