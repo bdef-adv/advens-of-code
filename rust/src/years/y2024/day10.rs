@@ -8,37 +8,22 @@ impl Point {
     pub const DIRECTIONS: [Point; 4] = [Point::RIGHT, Point::LEFT, Point::UP, Point::DOWN];
 }
 
-#[derive(Debug)]
-struct Trailhead {
-    start: Point,
-    rating: u64
-}
-
-impl Clone for Trailhead {
-    fn clone(&self) -> Self {
-        Trailhead {
-            start: self.start.clone(),
-            rating: self.rating,
-        }
-    }
-}
-
 struct Trailmap {
     maze: Maze,
-    trails: Vec<Trailhead>   
+    trails: Vec<Point>
 }
 
 impl Trailmap {
     fn from(input: &str) -> Self {
         let mut array: Vec<Vec<char>> = vec![];
-        let mut trails: Vec<Trailhead> = vec![];
+        let mut trails: Vec<Point> = vec![];
 
         for (y, line) in input.lines().enumerate() {
             array.push(vec![]);
             for (x, ch) in line.chars().enumerate() {
                 array[y].push(ch);
                 if ch == '0' {
-                    trails.push(Trailhead {start: Point {x: x as i32, y: y as i32}, rating: 0});
+                    trails.push(Point {x: x as i32, y: y as i32});
                 }
             }
         }
@@ -134,7 +119,7 @@ impl Trailmap {
         let mut score_sum: u64 = 0;
     
         for trail in self.trails.clone().iter() {
-            score_sum += self.run_trailhead(trail.start.clone(), 0, &mut vec![vec![false; self.maze.size_x]; self.maze.size_y]);
+            score_sum += self.run_trailhead(trail.clone(), 0, &mut vec![vec![false; self.maze.size_x]; self.maze.size_y]);
         }
     
         return score_sum;
@@ -144,7 +129,7 @@ impl Trailmap {
         let mut score_sum: u64 = 0;
     
         for trail in self.trails.clone().iter() {
-            score_sum += self.run_trailhead_rating(trail.start.clone(), 0, 0);
+            score_sum += self.run_trailhead_rating(trail.clone(), 0, 0);
         }
     
         return score_sum;
