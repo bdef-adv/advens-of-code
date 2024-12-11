@@ -29,7 +29,8 @@ fn solve_day(file_contents: &str) -> (usize, usize) {
 
     let sum_part1: usize = stones.len();
 
-    for _ in 0..50 {
+    for i in 0..50 {
+        println!("Blink {}", i+26);
         stones = blink(&mut stones);
     }
 
