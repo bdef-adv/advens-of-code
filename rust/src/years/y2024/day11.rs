@@ -28,7 +28,7 @@ fn solve_day(file_contents: &str) -> (usize, usize) {
      */
     let mut stones: Vec<String> = file_contents.split_whitespace().map(|s| s.to_string()).collect();
 
-    for _ in 0..25 {
+    for i in 0..25 {
         println!("Blink {}, {:?}", i+1, stones);
         blink(&mut stones);
     }
