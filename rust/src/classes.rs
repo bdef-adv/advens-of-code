@@ -8,6 +8,14 @@ pub struct Point {
 }
 
 impl Point {
+    pub const RIGHT: Point = Point {x: 1, y: 0};
+    pub const LEFT: Point = Point {x: -1, y: 0};
+    pub const UP: Point = Point {x: 0, y: -1};
+    pub const DOWN: Point = Point {x: 0, y: 1};
+    pub const DIRECTIONS: [Point; 4] = [Point::RIGHT, Point::LEFT, Point::UP, Point::DOWN];
+}
+
+impl Point {
 
     #[allow(unused)]
     pub fn new() -> Self {
