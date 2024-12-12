@@ -1,7 +1,7 @@
 use std::hash::{Hash, Hasher};
 use std::ops::{Add, Sub};
 
-#[derive(Debug)]
+#[derive(Debug,PartialEq)]
 pub struct Point {
     pub x: i32,
     pub y: i32
@@ -13,6 +13,17 @@ impl Point {
     pub const UP: Point = Point {x: 0, y: -1};
     pub const DOWN: Point = Point {x: 0, y: 1};
     pub const DIRECTIONS: [Point; 4] = [Point::RIGHT, Point::LEFT, Point::UP, Point::DOWN];
+
+    pub const UP_RIGHT: Point = Point {x: 1, y: -1};
+    pub const UP_LEFT: Point = Point {x: -1, y: -1};
+    pub const DOWN_RIGHT: Point = Point {x: 1, y: 1};
+    pub const DOWN_LEFT: Point = Point {x: -1, y: 1};
+    pub const DIAGONALS: [Point; 4] = [
+        Point::UP_RIGHT,
+        Point::UP_LEFT,
+        Point::DOWN_RIGHT,
+        Point::DOWN_LEFT
+    ];
 }
 
 impl Point {
@@ -34,11 +45,6 @@ impl Point {
     }
 }
 
-impl PartialEq for Point {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y
-    }
-}
 impl Eq for Point {}
 impl Hash for Point {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -120,5 +126,14 @@ impl Maze {
             }
             println!("");
         }
+    }
+
+    #[allow(unused)]
+    pub fn get_char(&self, pos: &Point) -> Option<char> {
+        if pos.x < 0 || pos.x >= self.size_x as i32 ||
+           pos.y < 0 || pos.y >= self.size_y as i32 {
+            return None;
+        }
+        Some(self.array[pos.y as usize][pos.x as usize])
     }
 }

@@ -9,7 +9,7 @@ impl Region {
         return self.plots.len();
     }
 
-    fn plot_neighbors(&self, plot: &Point, maze: &Maze) -> usize {
+    fn count_neighbors(&self, plot: &Point, maze: &Maze) -> usize {
         let mut neighbors: usize = 0;
 
         for direction in Point::DIRECTIONS {
@@ -32,19 +32,59 @@ impl Region {
     fn perimeter(&self, maze: &Maze) -> usize {
         let mut perimeter: usize = 0; 
         for plot in self.plots.iter() {
-            perimeter += 4 - self.plot_neighbors(plot, maze);
+            perimeter += 4 - self.count_neighbors(plot, maze);
         }
         return perimeter;
     }
 
-    fn sides(&self, maze: &Maze) -> usize {
-        let mut sides: usize = 0;
+    fn count_corners(&self, plot: &Point, maze: &Maze) -> usize {
+        let mut corners: usize = 0;
 
-        for plot in self.plots.iter() {
+        let directions = [
+            (Point::DOWN, Point::RIGHT, Point::DOWN_RIGHT),
+            (Point::DOWN, Point::LEFT, Point::DOWN_LEFT),
+            (Point::UP, Point::RIGHT, Point::UP_RIGHT),
+            (Point::UP, Point::LEFT, Point::UP_LEFT),
+        ];
+
+        for (d1, d2, d3) in directions {
+            let p1 = maze.get_char(&(d1.clone() + plot.clone()));
+            let p2 = maze.get_char(&(d2.clone() + plot.clone()));
+            let p3 = maze.get_char(&(d3.clone() + plot.clone()));
             
+            /* Coins classiques; ex:
+            RR -> on check si le R en haut à gauche n'a pas de voisin direct en haut et à gauche
+            R
+            */
+            if p1 != maze.get_char(&plot) &&
+               p2 != maze.get_char(&plot) {
+                corners += 1;
+            }
+
+            /* Coins classiques; ex:
+            RR
+            RR -> on check si le deuxieme R de ses sales morts a un voisin à gauche et en bas mais pas en diagonal
+            AR
+            quel batard ce R de merde putain
+            */
+            if p1 == maze.get_char(&plot) &&
+               p2 == maze.get_char(&plot) &&
+               p3 != maze.get_char(&plot) {
+                corners += 1;
+            }
         }
 
-        return sides;
+        return corners;
+    }
+
+    fn corners(&self, maze: &Maze) -> usize {
+        let mut corners = 0;
+
+        for plot in self.plots.iter() {
+            corners += self.count_corners(plot, maze);
+        }
+
+        return corners;
     }
 }
 
@@ -119,7 +159,7 @@ impl Garden {
     fn get_bulk_cost(&self) -> usize {
         let mut cost: usize = 0;
         for region in self.regions.iter() {
-            cost += region.area() * region.sides(&self.maze);
+            cost += region.area() * region.corners(&self.maze);
         }
         return cost;
     }
