@@ -49,32 +49,36 @@ impl ClawMachine {
         return machines;
     }
 
-    fn cheapest(&self) -> (i64, Point64) {
-        let mut cheapest: i64 = i64::MAX;
-        let mut pushes: Point64 = Point64::new();
+    fn cheapest(&self) -> Option<i64> {
+        let mut cheapest: Option<i64> = None;
         for a in 0..100 {
             for b in 0..100 {
                 let result: Point64 = self.button_a.clone() * a + self.button_b.clone() * b;
                 if result == self.prize {
                     let tokens = a*3 + b;
-                    if tokens < cheapest {
-                        cheapest = tokens;
-                        pushes.x = a;
-                        pushes.y = b;
+                    if cheapest == None {
+                        cheapest = Some(tokens);
+                    }
+                    if let Some(cheap) = cheapest  {
+                        if tokens < cheap {
+                            cheapest = Some(tokens);
+                        }
+                    } else {
+                        cheapest = Some(tokens);
                     }
                 }
             }
         }
 
-        return (cheapest, pushes);
+        cheapest
     }
 
     // merci chatGPT de me rappeler chaque année ce que c'est un determinant de matrice et des équations linéaires
-    fn cheapest_math(&self) -> i64 {
+    fn cheapest_math(&self) -> Option<i64> {
         let det_ab = self.button_a.x * self.button_b.y - self.button_a.y * self.button_b.x;
 
         if det_ab == 0 {
-            return -1;
+            return None;
         }
 
         let det_a_p = self.prize.x * self.button_b.y - self.prize.y * self.button_b.x;
@@ -84,9 +88,10 @@ impl ClawMachine {
         let b = det_p_b / det_ab;
 
         if self.button_a.clone()*a + self.button_b.clone()*b == self.prize {
-            return 3 * a + b
+            return Some(3 * a + b);
         }
-        return -1;
+
+        return None;
     }
 
     fn increase_prize(&mut self) {
@@ -103,28 +108,19 @@ fn solve_day(file_contents: &str) -> (i64, i64) {
 
     let mut claw_machines: Vec<ClawMachine> = ClawMachine::from(file_contents);
 
-    let mut tokens = 0;
-    for cm in claw_machines.iter() {
-        let (cheapest, _pushes) = cm.cheapest();
-
-        if cheapest < i64::MAX {
-            tokens += cheapest;
-        }
-    }
-
-    let sum_part1 = tokens;
-
-    tokens = 0;
+    let mut tokens_part1 = 0;
+    let mut tokens_part2 = 0;
     for cm in claw_machines.iter_mut() {
+        if let Some(cheapest) = cm.cheapest() {
+            tokens_part1 += cheapest;
+        }
         cm.increase_prize();
-        let cheapest = cm.cheapest_math();
-
-        if cheapest != -1 {
-            tokens += cheapest;
+        if let Some(cheapest) = cm.cheapest_math() {
+            tokens_part2 += cheapest;
         }
     }
     
-    (sum_part1, tokens)
+    (tokens_part1, tokens_part2)
 }
 
 
