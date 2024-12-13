@@ -1,7 +1,7 @@
-use std::hash::{Hash, Hasher};
+use std::hash::Hash;
 use std::ops::{Add, Sub, Mul};
 
-#[derive(Debug,PartialEq)]
+#[derive(Debug,PartialEq,Copy,Eq,Hash,Default,Clone)]
 pub struct Point<T> {
     pub x: T,
     pub y: T
@@ -12,27 +12,40 @@ impl Point<i32> {
     pub const LEFT: Point<i32> = Point {x: -1, y: 0};
     pub const UP: Point<i32> = Point {x: 0, y: -1};
     pub const DOWN: Point<i32> = Point {x: 0, y: 1};
-    pub const DIRECTIONS: [Point<i32>; 4] = [Point::RIGHT, Point::LEFT, Point::UP, Point::DOWN];
+    pub const DIRECTIONS: [Point<i32>; 4] = [Point::<i32>::RIGHT, Point::<i32>::LEFT, Point::<i32>::UP, Point::<i32>::DOWN];
 
     pub const UP_RIGHT: Point<i32> = Point {x: 1, y: -1};
     pub const UP_LEFT: Point<i32> = Point {x: -1, y: -1};
     pub const DOWN_RIGHT: Point<i32> = Point {x: 1, y: 1};
     pub const DOWN_LEFT: Point<i32> = Point {x: -1, y: 1};
     pub const DIAGONALS: [Point<i32>; 4] = [
-        Point::UP_RIGHT,
-        Point::UP_LEFT,
-        Point::DOWN_RIGHT,
-        Point::DOWN_LEFT
+        Point::<i32>::UP_RIGHT,
+        Point::<i32>::UP_LEFT,
+        Point::<i32>::DOWN_RIGHT,
+        Point::<i32>::DOWN_LEFT
+    ];
+}
+
+impl Point<i64> {
+    pub const RIGHT: Point<i64> = Point {x: 1, y: 0};
+    pub const LEFT: Point<i64> = Point {x: -1, y: 0};
+    pub const UP: Point<i64> = Point {x: 0, y: -1};
+    pub const DOWN: Point<i64> = Point {x: 0, y: 1};
+    pub const DIRECTIONS: [Point<i64>; 4] = [Point::<i64>::RIGHT, Point::<i64>::LEFT, Point::<i64>::UP, Point::<i64>::DOWN];
+
+    pub const UP_RIGHT: Point<i64> = Point {x: 1, y: -1};
+    pub const UP_LEFT: Point<i64> = Point {x: -1, y: -1};
+    pub const DOWN_RIGHT: Point<i64> = Point {x: 1, y: 1};
+    pub const DOWN_LEFT: Point<i64> = Point {x: -1, y: 1};
+    pub const DIAGONALS: [Point<i64>; 4] = [
+        Point::<i64>::UP_RIGHT,
+        Point::<i64>::UP_LEFT,
+        Point::<i64>::DOWN_RIGHT,
+        Point::<i64>::DOWN_LEFT
     ];
 }
 
 impl<T> Point<T> {
-
-    #[allow(unused)]
-    pub fn new() -> Self where T: Default {
-        return Point { x: T::default(), y: T::default() }
-    }
-
     pub fn from(x: T, y: T) -> Self {
         return Point { x, y }
     }
@@ -45,22 +58,7 @@ impl<T> Point<T> {
     }
 }
 
-impl<T: PartialEq> Eq for Point<T> {}
-impl<T> Hash for Point<T> where T: Hash {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.x.hash(state);
-        self.y.hash(state);
-    }
-}
-impl<T> Clone for Point<T> where T: Clone {
-    fn clone(&self) -> Self {
-        Point {
-            x: self.x.clone(),
-            y: self.y.clone(),
-        }
-    }
-}
-impl<T> Add for Point<T> where T: Add<Output = T> {
+impl<T: Add<Output=T>> Add for Point<T> {
     type Output = Self;
 
     fn add(self, other: Point<T>) -> Self::Output {
@@ -70,7 +68,7 @@ impl<T> Add for Point<T> where T: Add<Output = T> {
         }
     }
 }
-impl<T> Sub for Point<T> where T: Sub<Output = T> {
+impl<T: Sub<Output = T>> Sub for Point<T> {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self::Output {
@@ -80,21 +78,10 @@ impl<T> Sub for Point<T> where T: Sub<Output = T> {
         }
     }
 }
-impl Mul<i32> for Point<i32> {
+impl<T: Mul<Output = T> + Copy> Mul<T> for Point<T> {
     type Output = Self;
 
-    fn mul(self, factor: i32) -> Self::Output {
-        Point {
-            x: self.x * factor,
-            y: self.y * factor,
-        }
-    }
-}
-
-impl Mul<i64> for Point<i64> {
-    type Output = Self;
-
-    fn mul(self, factor: i64) -> Self::Output {
+    fn mul(self, factor: T) -> Self::Output {
         Point {
             x: self.x * factor,
             y: self.y * factor,

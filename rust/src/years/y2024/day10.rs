@@ -60,8 +60,8 @@ impl Trailmap {
         }
 
         let mut score = 0;
-        for direction in Point::DIRECTIONS {
-            let new_start = start.clone() + direction;
+        for direction in Point32::DIRECTIONS {
+            let new_start = start + direction;
 
             if new_start.x < 0 || new_start.x >= self.maze.size_x as i32 ||
                new_start.y < 0 || new_start.y >= self.maze.size_y as i32 {
@@ -93,8 +93,8 @@ impl Trailmap {
         }
     
         let mut new_score = score;
-        for direction in Point::DIRECTIONS {
-            let new_start = start.clone() + direction;
+        for direction in Point32::DIRECTIONS {
+            let new_start = start + direction;
     
             if new_start.x < 0 || new_start.x >= self.maze.size_x as i32 ||
                new_start.y < 0 || new_start.y >= self.maze.size_y as i32 {

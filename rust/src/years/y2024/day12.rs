@@ -14,9 +14,9 @@ impl Region {
     fn count_neighbors(&self, plot: &Point32, maze: &Maze) -> usize {
         let mut neighbors: usize = 0;
 
-        for direction in Point::DIRECTIONS {
+        for direction in Point32::DIRECTIONS {
             let ch: char = maze.array[plot.y as usize][plot.x as usize];
-            let new_start = plot.clone() + direction;
+            let new_start = *plot + direction;
 
             if new_start.x < 0 || new_start.x >= maze.size_x as i32 ||
                new_start.y < 0 || new_start.y >= maze.size_y as i32 {
@@ -43,16 +43,16 @@ impl Region {
         let mut corners: usize = 0;
 
         let directions = [
-            (Point::DOWN, Point::RIGHT, Point::DOWN_RIGHT),
-            (Point::DOWN, Point::LEFT, Point::DOWN_LEFT),
-            (Point::UP, Point::RIGHT, Point::UP_RIGHT),
-            (Point::UP, Point::LEFT, Point::UP_LEFT),
+            (Point32::DOWN, Point32::RIGHT, Point32::DOWN_RIGHT),
+            (Point32::DOWN, Point32::LEFT, Point32::DOWN_LEFT),
+            (Point32::UP, Point32::RIGHT, Point32::UP_RIGHT),
+            (Point32::UP, Point32::LEFT, Point32::UP_LEFT),
         ];
 
         for (d1, d2, d3) in directions {
-            let p1 = maze.get_char(&(d1.clone() + plot.clone()));
-            let p2 = maze.get_char(&(d2.clone() + plot.clone()));
-            let p3 = maze.get_char(&(d3.clone() + plot.clone()));
+            let p1 = maze.get_char(&(d1 + *plot));
+            let p2 = maze.get_char(&(d2 + *plot));
+            let p3 = maze.get_char(&(d3 + *plot));
             
             /* Coins classiques; ex:
             RR -> on check si le R en haut à gauche n'a pas de voisin direct en haut et à gauche
@@ -114,11 +114,11 @@ impl Garden {
 
         let ch = self.maze.array[start.y as usize][start.x as usize];
         
-        region_plots.push(start.clone());
+        region_plots.push(start);
         visited[start.y as usize][start.x as usize] = true;
 
-        for direction in Point::DIRECTIONS {
-            let new_start = start.clone() + direction;
+        for direction in Point32::DIRECTIONS {
+            let new_start = start + direction;
 
             if new_start.x < 0 || new_start.x >= self.maze.size_x as i32 ||
                new_start.y < 0 || new_start.y >= self.maze.size_y as i32 {

@@ -25,11 +25,11 @@ impl ClawMachine {
     fn from(input: &str) -> Vec<ClawMachine> {
         let mut machines: Vec<ClawMachine> = vec![];
 
-        let mut button_a = Point64::new();
-        let mut button_b = Point64::new();
+        let mut button_a = Point64::default();
+        let mut button_b = Point64::default();
 
         #[allow(unused_assignments)]
-        let mut prize = Point64::new();
+        let mut prize = Point64::default();
 
         for line in input.lines() {
             if line.starts_with("Button A:") {
@@ -39,9 +39,9 @@ impl ClawMachine {
             } else if line.starts_with("Prize:") {
                 prize = get_point_from_str(line.replace("=", "+").trim_start_matches("Prize: ").parse::<String>().unwrap().as_str());
                 machines.push(ClawMachine {
-                    button_a: button_a.clone(),
-                    button_b: button_b.clone(),
-                    prize: prize.clone()
+                    button_a: button_a,
+                    button_b: button_b,
+                    prize: prize
                 });
             }
         }
@@ -63,7 +63,7 @@ impl ClawMachine {
         let a = det_a_p / det_ab;
         let b = det_p_b / det_ab;
 
-        if self.button_a.clone()*a + self.button_b.clone()*b == self.prize {
+        if self.button_a*a + self.button_b*b == self.prize {
             return Some(3 * a + b);
         }
 

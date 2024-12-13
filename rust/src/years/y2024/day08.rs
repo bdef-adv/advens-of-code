@@ -46,7 +46,7 @@ impl City {
         if let Some(antenna_positions) = self.antennas.get(antenna) {
             for i in 0..antenna_positions.len() {
                 for j in i + 1..antenna_positions.len() {
-                    pairs.push((antenna_positions[i].clone(), antenna_positions[j].clone()));
+                    pairs.push((antenna_positions[i], antenna_positions[j]));
                 }
             }
         }
@@ -61,7 +61,7 @@ impl City {
 
             let distance = left.distance(&right);
 
-            let antinode_a = left - distance.clone();
+            let antinode_a = left - distance;
             let antinode_b = right + distance;
 
             if antinode_a.x < self.maze.size_x as i32 && antinode_a.x >= 0 &&
@@ -78,27 +78,27 @@ impl City {
 
     fn insert_harmonics_from_pairs(&mut self, pairs: &Vec<(Point32, Point32)>) {
         for (point_a, point_b) in pairs.iter() {
-            let left = point_a.clone();
-            let right = point_b.clone();
+            let left = point_a;
+            let right = point_b;
 
-            self.antinodes.insert(left.clone());
-            self.antinodes.insert(right.clone());
+            self.antinodes.insert(*left);
+            self.antinodes.insert(*right);
 
             let distance = left.distance(&right);
 
-            let mut antinode_a = left - distance.clone();
-            let mut antinode_b = right + distance.clone();
+            let mut antinode_a = *left - distance;
+            let mut antinode_b = *right + distance;
 
             while antinode_a.x < self.maze.size_x as i32 && antinode_a.x >= 0 &&
                   antinode_a.y < self.maze.size_y as i32 && antinode_a.y >= 0 {
-                self.antinodes.insert(antinode_a.clone());
-                antinode_a = antinode_a - distance.clone();
+                self.antinodes.insert(antinode_a);
+                antinode_a = antinode_a - distance;
             }
 
             while antinode_b.x < self.maze.size_x as i32 && antinode_b.x >= 0 &&
                   antinode_b.y < self.maze.size_y as i32 && antinode_b.y >= 0 {
-                self.antinodes.insert(antinode_b.clone());
-                antinode_b = antinode_b + distance.clone();
+                self.antinodes.insert(antinode_b);
+                antinode_b = antinode_b + distance;
             }
         }
     }
