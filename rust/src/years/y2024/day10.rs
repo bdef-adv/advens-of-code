@@ -1,14 +1,16 @@
 use crate::classes::{Maze,Point};
 
+type Point32 = Point<i32>;
+
 struct Trailmap {
     maze: Maze,
-    trails: Vec<Point>
+    trails: Vec<Point32>
 }
 
 impl Trailmap {
     fn from(input: &str) -> Self {
         let mut array: Vec<Vec<char>> = vec![];
-        let mut trails: Vec<Point> = vec![];
+        let mut trails: Vec<Point32> = vec![];
 
         for (y, line) in input.lines().enumerate() {
             array.push(vec![]);
@@ -35,7 +37,7 @@ impl Trailmap {
         }
     }
 
-    fn run_trailhead(&mut self, start: Point, position: u64, visited: &mut Vec<Vec<bool>>) -> u64 {
+    fn run_trailhead(&mut self, start: Point32, position: u64, visited: &mut Vec<Vec<bool>>) -> u64 {
         if start.x < 0 || start.x >= self.maze.size_x as i32 ||
            start.y < 0 || start.y >= self.maze.size_y as i32 {
             return 0;
@@ -74,7 +76,7 @@ impl Trailmap {
         return score;
     }
 
-    fn run_trailhead_rating(&mut self, start: Point, position: u64, score: u64) -> u64 {
+    fn run_trailhead_rating(&mut self, start: Point32, position: u64, score: u64) -> u64 {
         if start.x < 0 || start.x >= self.maze.size_x as i32 ||
            start.y < 0 || start.y >= self.maze.size_y as i32 {
             return score;

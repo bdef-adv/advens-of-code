@@ -1,7 +1,9 @@
 use crate::classes::{Maze, Point};
 
+type Point32 = Point<i32>;
+
 struct Region {
-    plots: Vec<Point>
+    plots: Vec<Point32>
 }
 
 impl Region {
@@ -9,7 +11,7 @@ impl Region {
         return self.plots.len();
     }
 
-    fn count_neighbors(&self, plot: &Point, maze: &Maze) -> usize {
+    fn count_neighbors(&self, plot: &Point32, maze: &Maze) -> usize {
         let mut neighbors: usize = 0;
 
         for direction in Point::DIRECTIONS {
@@ -37,7 +39,7 @@ impl Region {
         return perimeter;
     }
 
-    fn count_corners(&self, plot: &Point, maze: &Maze) -> usize {
+    fn count_corners(&self, plot: &Point32, maze: &Maze) -> usize {
         let mut corners: usize = 0;
 
         let directions = [
@@ -105,7 +107,7 @@ impl Garden {
         }
     }
 
-    fn find_neighbors(&mut self, start: Point, region_plots: &mut Vec<Point>, visited: &mut Vec<Vec<bool>>) {
+    fn find_neighbors(&mut self, start: Point32, region_plots: &mut Vec<Point32>, visited: &mut Vec<Vec<bool>>) {
         if visited[start.y as usize][start.x as usize] {
             return;
         }
@@ -138,8 +140,8 @@ impl Garden {
                     continue;
                 }
 
-                let mut region_plots: Vec<Point> = vec![];
-                self.find_neighbors(Point {x: x as i32, y: y as i32}, &mut region_plots, &mut visited);
+                let mut region_plots: Vec<Point32> = vec![];
+                self.find_neighbors(Point32 {x: x as i32, y: y as i32}, &mut region_plots, &mut visited);
 
                 if !region_plots.is_empty() {
                     self.regions.push(Region {plots: region_plots});

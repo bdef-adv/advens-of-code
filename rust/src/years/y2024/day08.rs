@@ -1,24 +1,25 @@
 use crate::classes::{Point, Maze};
 use std::collections::{HashMap, HashSet};
 
+type Point32 = Point<i32>;
 
 struct City {
     maze: Maze,
-    pub antennas: HashMap<char, Vec<Point>>,
-    pub antinodes: HashSet<Point>
+    pub antennas: HashMap<char, Vec<Point32>>,
+    pub antinodes: HashSet<Point32>
 }
 
 impl City {
     fn from(input: &str) -> Self {
         let mut array: Vec<Vec<char>> = vec![];
-        let mut antennas: HashMap<char, Vec<Point>> = HashMap::new();
+        let mut antennas: HashMap<char, Vec<Point32>> = HashMap::new();
 
         for (y, line) in input.lines().enumerate() {
             array.push(vec![]);
             for (x, ch) in line.chars().enumerate() {
                 array[y].push(ch);
                 if ch.is_alphanumeric() {
-                    antennas.entry(ch).or_insert(vec![]).push(Point::from(x as i32, y as i32));
+                    antennas.entry(ch).or_insert(vec![]).push(Point32::from(x as i32, y as i32));
                 }
             }
         }
@@ -39,8 +40,8 @@ impl City {
         }
     }
 
-    fn get_antenna_pairs(&self, antenna: &char) -> Vec<(Point, Point)> {
-        let mut pairs: Vec<(Point, Point)> = vec![];
+    fn get_antenna_pairs(&self, antenna: &char) -> Vec<(Point32, Point32)> {
+        let mut pairs: Vec<(Point32, Point32)> = vec![];
 
         if let Some(antenna_positions) = self.antennas.get(antenna) {
             for i in 0..antenna_positions.len() {
@@ -53,7 +54,7 @@ impl City {
         return pairs;
     }
 
-    fn insert_antinode_from_pairs(&mut self, pairs: &Vec<(Point, Point)>) {
+    fn insert_antinode_from_pairs(&mut self, pairs: &Vec<(Point32, Point32)>) {
         for (point_a, point_b) in pairs.iter() {
             let left = point_a.clone();
             let right = point_b.clone();
@@ -75,7 +76,7 @@ impl City {
         }
     }
 
-    fn insert_harmonics_from_pairs(&mut self, pairs: &Vec<(Point, Point)>) {
+    fn insert_harmonics_from_pairs(&mut self, pairs: &Vec<(Point32, Point32)>) {
         for (point_a, point_b) in pairs.iter() {
             let left = point_a.clone();
             let right = point_b.clone();

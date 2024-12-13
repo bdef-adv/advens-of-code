@@ -1,17 +1,130 @@
 /*
 Friday the 13th - Oh shit oh fuck
 */
+use crate::classes::Point;
 
-fn solve_day(_file_contents: &str) -> (u32, u32) {
+type Point64 = Point<i64>;
+
+#[derive(Debug)]
+struct ClawMachine {
+    button_a: Point64,
+    button_b: Point64,
+    prize: Point64
+}
+
+fn get_point_from_str(input: &str) -> Point64 {
+    let parts: Vec<&str> = input.split(", ").collect();
+
+    let x: i64 = parts[0].trim_start_matches("X+").parse().unwrap();
+    let y: i64 = parts[1].trim_start_matches("Y+").parse().unwrap();
+
+    return Point64 {x, y};
+}
+
+impl ClawMachine {
+    fn from(input: &str) -> Vec<ClawMachine> {
+        let mut machines: Vec<ClawMachine> = vec![];
+
+        let mut button_a = Point64::new();
+        let mut button_b = Point64::new();
+
+        #[allow(unused_assignments)]
+        let mut prize = Point64::new();
+
+        for line in input.lines() {
+            if line.starts_with("Button A:") {
+                button_a = get_point_from_str(line.trim_start_matches("Button A: ").parse::<String>().unwrap().as_str());
+            } else if line.starts_with("Button B:") {
+                button_b = get_point_from_str(line.trim_start_matches("Button B: ").parse::<String>().unwrap().as_str());
+            } else if line.starts_with("Prize:") {
+                prize = get_point_from_str(line.replace("=", "+").trim_start_matches("Prize: ").parse::<String>().unwrap().as_str());
+                machines.push(ClawMachine {
+                    button_a: button_a.clone(),
+                    button_b: button_b.clone(),
+                    prize: prize.clone()
+                });
+            }
+        }
+
+        return machines;
+    }
+
+    fn cheapest(&self) -> (i64, Point64) {
+        let mut cheapest: i64 = i64::MAX;
+        let mut pushes: Point64 = Point64::new();
+        for a in 0..100 {
+            for b in 0..100 {
+                let result: Point64 = self.button_a.clone() * a + self.button_b.clone() * b;
+                if result == self.prize {
+                    let tokens = a*3 + b;
+                    if tokens < cheapest {
+                        cheapest = tokens;
+                        pushes.x = a;
+                        pushes.y = b;
+                    }
+                }
+            }
+        }
+
+        return (cheapest, pushes);
+    }
+
+    // merci chatGPT de me rappeler chaque année ce que c'est un determinant de matrice et des équations linéaires
+    fn cheapest_math(&self) -> i64 {
+        let det_ab = self.button_a.x * self.button_b.y - self.button_a.y * self.button_b.x;
+
+        if det_ab == 0 {
+            return -1;
+        }
+
+        let det_a_p = self.prize.x * self.button_b.y - self.prize.y * self.button_b.x;
+        let det_p_b = self.button_a.x * self.prize.y - self.button_a.y * self.prize.x;
+
+        let a = det_a_p / det_ab;
+        let b = det_p_b / det_ab;
+
+        if self.button_a.clone()*a + self.button_b.clone()*b == self.prize {
+            return 3 * a + b
+        }
+        return -1;
+    }
+
+    fn increase_prize(&mut self) {
+        self.prize.x += 10000000000000;
+        self.prize.y += 10000000000000;
+    }
+}
+
+
+fn solve_day(file_contents: &str) -> (i64, i64) {
     /*
         Solve day
      */
-    let mut sum_part1: u32 = 0;
-    let mut sum_part2: u32 = 0;
-    sum_part1 += 0;
-    sum_part2 += 0;
+
+    let mut claw_machines: Vec<ClawMachine> = ClawMachine::from(file_contents);
+
+    let mut tokens = 0;
+    for cm in claw_machines.iter() {
+        let (cheapest, _pushes) = cm.cheapest();
+
+        if cheapest < i64::MAX {
+            tokens += cheapest;
+        }
+    }
+
+    let sum_part1 = tokens;
+
+    tokens = 0;
+    for cm in claw_machines.iter_mut() {
+        cm.increase_prize();
+        let cheapest = cm.cheapest_math();
+
+        if cheapest != -1 {
+            tokens += cheapest;
+        }
+    }
     
-    (sum_part1, sum_part2)
+    (sum_part1, tokens)
 }
 
 
