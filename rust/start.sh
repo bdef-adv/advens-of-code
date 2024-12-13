@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 APP_NAME=$(grep name Cargo.toml | cut -d"\"" -f2)
 args=()
