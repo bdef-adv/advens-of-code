@@ -49,32 +49,8 @@ impl ClawMachine {
         return machines;
     }
 
-    fn cheapest(&self) -> Option<i64> {
-        let mut cheapest: Option<i64> = None;
-        for a in 0..100 {
-            for b in 0..100 {
-                let result: Point64 = self.button_a.clone() * a + self.button_b.clone() * b;
-                if result == self.prize {
-                    let tokens = a*3 + b;
-                    if cheapest == None {
-                        cheapest = Some(tokens);
-                    }
-                    if let Some(cheap) = cheapest  {
-                        if tokens < cheap {
-                            cheapest = Some(tokens);
-                        }
-                    } else {
-                        cheapest = Some(tokens);
-                    }
-                }
-            }
-        }
-
-        cheapest
-    }
-
     // merci chatGPT de me rappeler chaque année ce que c'est un determinant de matrice et des équations linéaires
-    fn cheapest_math(&self) -> Option<i64> {
+    fn cheapest(&self) -> Option<i64> {
         let det_ab = self.button_a.x * self.button_b.y - self.button_a.y * self.button_b.x;
 
         if det_ab == 0 {
@@ -115,7 +91,7 @@ fn solve_day(file_contents: &str) -> (i64, i64) {
             tokens_part1 += cheapest;
         }
         cm.increase_prize();
-        if let Some(cheapest) = cm.cheapest_math() {
+        if let Some(cheapest) = cm.cheapest() {
             tokens_part2 += cheapest;
         }
     }
