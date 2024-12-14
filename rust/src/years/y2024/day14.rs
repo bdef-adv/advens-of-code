@@ -188,8 +188,7 @@ fn solve_day(file_contents: &str) -> (u64, u64) {
     let mut bathroom = Bathroom::from(file_contents, 101, 103);
     bathroom.elapse(100);
     let sum_part1 = bathroom.score_quadrants();
-    bathroom = Bathroom::from(file_contents, 101, 103);
-    let sum_part2: u64 = bathroom.elapse_tree();
+    let sum_part2: u64 = bathroom.elapse_tree() + 100;
     
     (sum_part1, sum_part2)
 }
