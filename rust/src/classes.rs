@@ -144,4 +144,24 @@ impl Maze {
         }
         Some(self.array[pos.y as usize][pos.x as usize])
     }
+
+    #[allow(unused)]
+    pub fn set_char(&mut self, pos: &Point<i32>, ch: char) {
+        if pos.x < 0 || pos.x >= self.size_x as i32 ||
+           pos.y < 0 || pos.y >= self.size_y as i32 {
+            return;
+        }
+        self.array[pos.y as usize][pos.x as usize] = ch;
+    }
+
+    #[allow(unused)]
+    pub fn find_string(&self, pat: &str) -> bool {
+        for line_vec in self.array.iter() {
+            let line: String = line_vec.iter().collect();
+            if let Some(index) = line.find(pat) {
+                return true
+            }
+        }
+        return false;
+    }
 }

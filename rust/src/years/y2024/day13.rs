@@ -80,8 +80,7 @@ impl ClawMachine {
 fn solve_day(file_contents: &str) -> (i64, i64) {
     /*
         Solve day
-     */
-
+    */
     let mut claw_machines: Vec<ClawMachine> = ClawMachine::from(file_contents);
 
     let mut tokens_part1 = 0;
