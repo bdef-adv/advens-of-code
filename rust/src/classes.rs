@@ -1,5 +1,6 @@
 use std::hash::Hash;
 use std::ops::{Add, Sub, Mul};
+use std::fmt;
 
 #[derive(Debug,PartialEq,Copy,Eq,Hash,Default,Clone)]
 pub struct Point<T> {
@@ -86,6 +87,11 @@ impl<T: Mul<Output = T> + Copy> Mul<T> for Point<T> {
             x: self.x * factor,
             y: self.y * factor,
         }
+    }
+}
+impl<T: std::fmt::Display> fmt::Display for Point<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({},{})", self.x, self.y)
     }
 }
 
