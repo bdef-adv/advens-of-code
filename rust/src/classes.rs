@@ -89,14 +89,14 @@ impl<T: Mul<Output = T> + Copy> Mul<T> for Point<T> {
     }
 }
 
-pub struct Maze {
+pub struct Maze<T> {
     pub size_y: usize,
     pub size_x: usize,
     #[allow(unused)]
-    pub array: Vec<Vec<char>>,
+    pub array: Vec<Vec<T>>,
 }
 
-impl Maze {
+impl<T: Copy + std::fmt::Display> Maze<T> {
     #[allow(unused)]
     pub fn new() -> Self {
         return Maze {
@@ -104,6 +104,47 @@ impl Maze {
             size_x: 0,
             array: vec![]
         }
+    }
+
+    #[allow(unused)]
+    pub fn print(&self) {
+        for row in self.array.iter() {
+            for &col in row.iter() {
+                print!("{}", col);
+            }
+            println!("");
+        }
+    }
+
+    #[allow(unused)]
+    pub fn get(&self, pos: &Point<i32>) -> Option<T> {
+        if pos.x < 0 || pos.x >= self.size_x as i32 ||
+           pos.y < 0 || pos.y >= self.size_y as i32 {
+            return None;
+        }
+        Some(self.array[pos.y as usize][pos.x as usize])
+    }
+
+    #[allow(unused)]
+    pub fn set(&mut self, pos: &Point<i32>, ch: T) {
+        if pos.x < 0 || pos.x >= self.size_x as i32 ||
+           pos.y < 0 || pos.y >= self.size_y as i32 {
+            return;
+        }
+        self.array[pos.y as usize][pos.x as usize] = ch;
+    }
+}
+
+impl Maze<char> {
+    #[allow(unused)]
+    pub fn find_string(&self, pat: &str) -> bool {
+        for line_vec in self.array.iter() {
+            let line: String = line_vec.iter().collect();
+            if let Some(index) = line.find(pat) {
+                return true
+            }
+        }
+        return false;
     }
 
     pub fn from(input: &str) -> Self {
@@ -124,44 +165,5 @@ impl Maze {
             size_x,
             array,
         }
-    }
-
-    #[allow(unused)]
-    pub fn print(&self) {
-        for row in self.array.iter() {
-            for &col in row.iter() {
-                print!("{col}");
-            }
-            println!("");
-        }
-    }
-
-    #[allow(unused)]
-    pub fn get_char(&self, pos: &Point<i32>) -> Option<char> {
-        if pos.x < 0 || pos.x >= self.size_x as i32 ||
-           pos.y < 0 || pos.y >= self.size_y as i32 {
-            return None;
-        }
-        Some(self.array[pos.y as usize][pos.x as usize])
-    }
-
-    #[allow(unused)]
-    pub fn set_char(&mut self, pos: &Point<i32>, ch: char) {
-        if pos.x < 0 || pos.x >= self.size_x as i32 ||
-           pos.y < 0 || pos.y >= self.size_y as i32 {
-            return;
-        }
-        self.array[pos.y as usize][pos.x as usize] = ch;
-    }
-
-    #[allow(unused)]
-    pub fn find_string(&self, pat: &str) -> bool {
-        for line_vec in self.array.iter() {
-            let line: String = line_vec.iter().collect();
-            if let Some(index) = line.find(pat) {
-                return true
-            }
-        }
-        return false;
     }
 }

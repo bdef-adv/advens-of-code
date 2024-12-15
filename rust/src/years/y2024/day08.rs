@@ -2,9 +2,10 @@ use crate::classes::{Point, Maze};
 use std::collections::{HashMap, HashSet};
 
 type Point32 = Point<i32>;
+type MazeChar = Maze<char>;
 
 struct City {
-    maze: Maze,
+    maze: MazeChar,
     pub antennas: HashMap<char, Vec<Point32>>,
     pub antinodes: HashSet<Point32>
 }
@@ -27,7 +28,7 @@ impl City {
         let size_y = array.len();
         let size_x = array[0].len();
 
-        let maze: Maze = Maze {
+        let maze: MazeChar = MazeChar {
             size_y,
             size_x,
             array

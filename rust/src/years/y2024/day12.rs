@@ -1,6 +1,7 @@
 use crate::classes::{Maze, Point};
 
 type Point32 = Point<i32>;
+type MazeChar = Maze<char>;
 
 struct Region {
     plots: Vec<Point32>
@@ -11,7 +12,7 @@ impl Region {
         return self.plots.len();
     }
 
-    fn count_neighbors(&self, plot: &Point32, maze: &Maze) -> usize {
+    fn count_neighbors(&self, plot: &Point32, maze: &MazeChar) -> usize {
         let mut neighbors: usize = 0;
 
         for direction in Point32::DIRECTIONS {
@@ -31,7 +32,7 @@ impl Region {
         return neighbors;
     }
 
-    fn perimeter(&self, maze: &Maze) -> usize {
+    fn perimeter(&self, maze: &MazeChar) -> usize {
         let mut perimeter: usize = 0; 
         for plot in self.plots.iter() {
             perimeter += 4 - self.count_neighbors(plot, maze);
@@ -39,7 +40,7 @@ impl Region {
         return perimeter;
     }
 
-    fn count_corners(&self, plot: &Point32, maze: &Maze) -> usize {
+    fn count_corners(&self, plot: &Point32, maze: &MazeChar) -> usize {
         let mut corners: usize = 0;
 
         let directions = [
@@ -50,16 +51,16 @@ impl Region {
         ];
 
         for (d1, d2, d3) in directions {
-            let p1 = maze.get_char(&(d1 + *plot));
-            let p2 = maze.get_char(&(d2 + *plot));
-            let p3 = maze.get_char(&(d3 + *plot));
+            let p1 = maze.get(&(d1 + *plot));
+            let p2 = maze.get(&(d2 + *plot));
+            let p3 = maze.get(&(d3 + *plot));
             
             /* Coins classiques; ex:
             RR -> on check si le R en haut à gauche n'a pas de voisin direct en haut et à gauche
             R
             */
-            if p1 != maze.get_char(&plot) &&
-               p2 != maze.get_char(&plot) {
+            if p1 != maze.get(&plot) &&
+               p2 != maze.get(&plot) {
                 corners += 1;
             }
 
@@ -69,9 +70,9 @@ impl Region {
             AR
             quel batard ce R de merde putain
             */
-            if p1 == maze.get_char(&plot) &&
-               p2 == maze.get_char(&plot) &&
-               p3 != maze.get_char(&plot) {
+            if p1 == maze.get(&plot) &&
+               p2 == maze.get(&plot) &&
+               p3 != maze.get(&plot) {
                 corners += 1;
             }
         }
@@ -79,7 +80,7 @@ impl Region {
         return corners;
     }
 
-    fn corners(&self, maze: &Maze) -> usize {
+    fn corners(&self, maze: &MazeChar) -> usize {
         let mut corners = 0;
 
         for plot in self.plots.iter() {
@@ -91,7 +92,7 @@ impl Region {
 }
 
 struct Garden {
-    maze: Maze,
+    maze: MazeChar,
     regions: Vec<Region>
 }
 
@@ -99,7 +100,7 @@ impl Garden {
     fn from(input: &str) -> Self {
         let regions: Vec<Region> = vec![];
 
-        let maze = Maze::from(input);
+        let maze = MazeChar::from(input);
 
         return Garden {
             maze,

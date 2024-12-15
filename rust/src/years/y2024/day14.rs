@@ -1,6 +1,7 @@
 use crate::classes::{Point,Maze};
 
 type Point32 = Point<i32>;
+type MazeChar = Maze<char>;
 
 struct Robot {
     position: Point32,
@@ -8,7 +9,7 @@ struct Robot {
 }
 
 impl Robot {
-    fn next(&mut self, maze: &Maze) {
+    fn next(&mut self, maze: &MazeChar) {
         let mut next_pos = self.position + self.velocity;
         if next_pos.x < 0 {
             next_pos.x = maze.size_x as i32 + next_pos.x;
@@ -36,14 +37,14 @@ fn get_point_from_str(input: &str, split_str: &str) -> Point32 {
 }
 
 struct Bathroom {
-    maze: Maze,
+    maze: MazeChar,
     robots: Vec<Robot>
 }
 
 impl Bathroom {
     fn from(input: &str, size_x: usize, size_y: usize) -> Self {
         let array: Vec<Vec<char>> = vec![vec!['.'; size_x]; size_y];
-        let maze = Maze {size_x, size_y, array};
+        let maze = MazeChar {size_x, size_y, array};
 
         let mut robots: Vec<Robot> = vec![];
 
@@ -104,15 +105,15 @@ impl Bathroom {
     fn reset_array(&mut self) {
         for y in 0..self.maze.size_y {
             for x in 0..self.maze.size_x {
-                self.maze.set_char(&Point32 {x: x as i32, y: y as i32}, '.');
+                self.maze.set(&Point32 {x: x as i32, y: y as i32}, '.');
             }
         }
 
         for robot in self.robots.iter() {
-            if let Some(ch) = self.maze.get_char(&robot.position) {
+            if let Some(ch) = self.maze.get(&robot.position) {
                 match ch {
                     '.' => {
-                        self.maze.set_char(&robot.position, 'x');
+                        self.maze.set(&robot.position, 'x');
                     },
                     _ => {}
                 }
@@ -124,42 +125,42 @@ impl Bathroom {
     fn print(&mut self) {
         for y in 0..self.maze.size_y {
             for x in 0..self.maze.size_x {
-                self.maze.set_char(&Point32 {x: x as i32, y: y as i32}, '.');
+                self.maze.set(&Point32 {x: x as i32, y: y as i32}, '.');
             }
         }
 
         for robot in self.robots.iter() {
-            if let Some(ch) = self.maze.get_char(&robot.position) {
+            if let Some(ch) = self.maze.get(&robot.position) {
                 match ch {
                     '.' => {
-                        self.maze.set_char(&robot.position, '1');
+                        self.maze.set(&robot.position, '1');
                     },
                     '1' => {
-                        self.maze.set_char(&robot.position, '2');
+                        self.maze.set(&robot.position, '2');
                     },
                     '2' => {
-                        self.maze.set_char(&robot.position, '3');
+                        self.maze.set(&robot.position, '3');
                     },
                     '3' => {
-                        self.maze.set_char(&robot.position, '4');
+                        self.maze.set(&robot.position, '4');
                     },
                     '4' => {
-                        self.maze.set_char(&robot.position, '5');
+                        self.maze.set(&robot.position, '5');
                     },
                     '5' => {
-                        self.maze.set_char(&robot.position, '6');
+                        self.maze.set(&robot.position, '6');
                     },
                     '6' => {
-                        self.maze.set_char(&robot.position, '7');
+                        self.maze.set(&robot.position, '7');
                     },
                     '7' => {
-                        self.maze.set_char(&robot.position, '8');
+                        self.maze.set(&robot.position, '8');
                     },
                     '8' => {
-                        self.maze.set_char(&robot.position, '9');
+                        self.maze.set(&robot.position, '9');
                     },
                     '9' => {
-                        self.maze.set_char(&robot.position, '*');
+                        self.maze.set(&robot.position, '*');
                     },
                     _ => {}
                 }

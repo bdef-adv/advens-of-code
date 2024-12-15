@@ -1,9 +1,10 @@
 use crate::classes::{Maze,Point};
 
 type Point32 = Point<i32>;
+type MazeChar = Maze<char>;
 
 struct Trailmap {
-    maze: Maze,
+    maze: MazeChar,
     trails: Vec<Point32>
 }
 
@@ -25,7 +26,7 @@ impl Trailmap {
         let size_y = array.len();
         let size_x = array[0].len();
 
-        let maze = Maze {
+        let maze = MazeChar {
             size_y,
             size_x,
             array,
