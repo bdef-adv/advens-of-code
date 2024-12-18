@@ -2,7 +2,7 @@ use std::hash::Hash;
 use std::ops::{Add, Sub, Mul};
 use std::fmt;
 
-#[derive(Debug,PartialEq,Copy,Eq,Hash,Default,Clone)]
+#[derive(Debug,PartialEq,Copy,Eq,Hash,Default,Clone,Ord,PartialOrd)]
 pub struct Point<T> {
     pub x: T,
     pub y: T
@@ -25,6 +25,24 @@ impl Point<i32> {
         Point::<i32>::DOWN_RIGHT,
         Point::<i32>::DOWN_LEFT
     ];
+
+    pub fn inverse(&self) -> Point<i32> {
+        return Point::<i32> {
+            x: self.x * -1,
+            y: self.y * -1
+        }
+    }
+
+    pub fn is_rotated(&self, other: Point<i32>) -> bool {
+        return (*self == Point::<i32>::LEFT && (other == Point::<i32>::DOWN || other == Point::<i32>::UP)) ||
+               (*self == Point::<i32>::RIGHT && (other == Point::<i32>::DOWN || other == Point::<i32>::UP)) ||
+               (*self == Point::<i32>::DOWN && (other == Point::<i32>::RIGHT || other == Point::<i32>::LEFT)) ||
+               (*self == Point::<i32>::UP && (other == Point::<i32>::RIGHT || other == Point::<i32>::LEFT));
+    }
+
+    pub fn distance_from(&self, other: &Point<i32>) -> usize  {
+        (self.x.abs_diff(other.x) + self.y.abs_diff(other.y)) as usize
+    }
 }
 
 impl Point<i64> {
@@ -46,15 +64,15 @@ impl Point<i64> {
     ];
 }
 
-impl<T> Point<T> {
+impl<T: Mul<Output = T> + Copy> Point<T> {
     pub fn from(x: T, y: T) -> Self {
         return Point { x, y }
     }
 
     pub fn distance(&self, other: &Point<T>) -> Self where T: Sub<Output = T> + Clone  {
         return Point {
-            x: other.x.clone() - self.x.clone(),
-            y: other.y.clone() - self.y.clone()
+            x: other.x - self.x,
+            y: other.y - self.y
         }
     }
 }
@@ -102,7 +120,7 @@ pub struct Maze<T> {
     pub array: Vec<Vec<T>>,
 }
 
-impl<T: Copy + std::fmt::Display> Maze<T> {
+impl<T: Copy + std::fmt::Display + std::cmp::PartialEq> Maze<T> {
     #[allow(unused)]
     pub fn new() -> Self {
         return Maze {
@@ -138,6 +156,31 @@ impl<T: Copy + std::fmt::Display> Maze<T> {
             return;
         }
         self.array[pos.y as usize][pos.x as usize] = ch;
+    }
+
+    #[allow(unused)]
+    pub fn find_first(&self, to_find: T) -> Option<Point<i32>> {
+        for (y, line) in self.array.iter().enumerate() {
+            for (x, &ch) in line.iter().enumerate() {
+                if ch == to_find {
+                    return Some(Point::<i32> {x: x as i32, y: y as i32});
+                }
+            }
+        }
+        return None
+    }
+
+    #[allow(unused)]
+    pub fn count(&self, to_count: T) -> usize {
+        let mut count: usize = 0;
+        for (y, line) in self.array.iter().enumerate() {
+            for (x, &ch) in line.iter().enumerate() {
+                if ch == to_count {
+                    count += 1;
+                }
+            }
+        }
+        return count;
     }
 }
 
