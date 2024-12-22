@@ -13,7 +13,7 @@ fn direction_from_char(ch: char) -> Point32 {
     }
 }
 
-#[derive(PartialEq,Eq,Clone,Copy)]
+#[derive(PartialEq,Eq,Clone,Copy,Debug)]
 enum Thing {
     Box,
     Wall,
@@ -110,14 +110,14 @@ impl Warehouse {
         if let Some(thing) = self.maze.get(&next_pos) {
             match thing {
                 Thing::Empty => {
-                    self.maze.array[box_pos.y as usize][box_pos.x as usize] = Thing::Empty;
-                    self.maze.array[next_pos.y as usize][next_pos.x as usize] = Thing::Box;
+                    self.maze.set(&box_pos, Thing::Empty);
+                    self.maze.set(&next_pos, Thing::Box);
                     return true;
                 },
                 Thing::Box => {
                     if self.move_boxes(next_pos, direction) {
-                        self.maze.array[box_pos.y as usize][box_pos.x as usize] = Thing::Empty;
-                        self.maze.array[next_pos.y as usize][next_pos.x as usize] = Thing::Box;
+                        self.maze.set(&box_pos, Thing::Empty);
+                        self.maze.set(&next_pos, Thing::Box);
                         return true;
                     } else {
                         return false;
@@ -138,14 +138,14 @@ impl Warehouse {
         if let Some(thing) = self.maze.get(&new_pos) {
             match thing {
                 Thing::Empty => {
-                    self.maze.array[self.robot.y as usize][self.robot.x as usize] = Thing::Empty;
-                    self.maze.array[new_pos.y as usize][new_pos.x as usize] = Thing::Robot;
+                    self.maze.set(&self.robot, Thing::Empty);
+                    self.maze.set(&new_pos, Thing::Robot);
                     self.robot = new_pos;
                 },
                 Thing::Box => {
                     if self.move_boxes(new_pos, direction) {
-                        self.maze.array[self.robot.y as usize][self.robot.x as usize] = Thing::Empty;
-                        self.maze.array[new_pos.y as usize][new_pos.x as usize] = Thing::Robot;
+                        self.maze.set(&self.robot, Thing::Empty);
+                        self.maze.set(&new_pos, Thing::Robot);
                         self.robot = new_pos;
                     }
                 },
@@ -252,31 +252,215 @@ impl WarehouseDeBatard {
         }
     }
 
-    fn move_boxes(&mut self, box_pos: Point32, direction: Point32) -> bool {
-        let next_pos = box_pos + direction;
+    fn move_boxes(&mut self, box_pos: Point32, direction: Point32, set: bool, depth: usize) -> bool {
+        let cur_thing = self.maze.get(&box_pos).unwrap();
+        let _indent= "  ".repeat(depth);
 
-        if let Some(thing) = self.maze.get(&next_pos) {
-            match thing {
-                Thing::Empty => {
-                    self.maze.array[box_pos.y as usize][box_pos.x as usize] = Thing::Empty;
-                    self.maze.array[next_pos.y as usize][next_pos.x as usize] = Thing::Box;
-                    return true;
-                },
-                Thing::BoxLeft | Thing::BoxRight => {
-                    if self.move_boxes(next_pos, direction) {
-                        self.maze.array[box_pos.y as usize][box_pos.x as usize] = Thing::Empty;
-                        self.maze.array[next_pos.y as usize][next_pos.x as usize] = Thing::Box;
+        if direction == Point32::LEFT || direction == Point32::RIGHT {
+            let next_pos = box_pos + direction;
+            if let Some(thing) = self.maze.get(&next_pos) {
+                match thing {
+                    Thing::Empty => {
+                        if set {
+                            self.maze.set(&box_pos, Thing::Empty);
+                            self.maze.set(&next_pos, cur_thing);
+                        }
                         return true;
-                    } else {
+                    },
+                    Thing::BoxLeft | Thing::BoxRight => {
+                        if self.move_boxes(next_pos, direction, true, depth+1) {
+                            if set {
+                                self.maze.set(&box_pos, Thing::Empty);
+                                self.maze.set(&next_pos, cur_thing);
+                            }
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    _ => {
                         return false;
                     }
-                },
-                _ => {
+                }
+            }    
+        } else {
+            if cur_thing == Thing::Empty {
+                if set {
+                    self.maze.set(&box_pos, Thing::Empty);
+                }
+                return true;
+            }
+
+            let mut boxes_to_check: Vec<Point32> = vec![];
+            boxes_to_check.push(box_pos);
+
+            if cur_thing == Thing::BoxRight {
+                boxes_to_check.push(box_pos + Point32::LEFT);
+            } else if cur_thing == Thing::BoxLeft {
+                boxes_to_check.push(box_pos + Point32::RIGHT);
+            }
+
+            for &cbox_pos in boxes_to_check.iter() {
+                let next_pos = cbox_pos + direction;
+                if !self.move_boxes(next_pos, direction, false, depth+1) {
                     return false;
                 }
             }
-        }
 
+            if !set {
+                return true;
+            }
+
+            for &cbox_pos in boxes_to_check.iter() {
+                let next_pos = cbox_pos + direction;
+                self.move_boxes(next_pos, direction, true, depth+1);
+            }
+            return true;
+
+
+            /*println!("{indent}{set} Thing is: {:?} at position {box_pos}", cur_thing);
+            println!("{indent}{set} We want to move {cur_thing:?} to {next_pos}");
+            let mut cur_box_otherside: Point32 = box_pos;
+            let mut box_otherside_next_pos: Point32 = next_pos;
+            if cur_thing == Thing::BoxRight {
+                cur_box_otherside = cur_box_otherside + Point32::LEFT;
+                box_otherside_next_pos = box_otherside_next_pos + Point32::LEFT;
+                println!("{indent}{set} BoxLeft is at position {cur_box_otherside}");
+                println!("{indent}{set} We want to move BoxLeft to {box_otherside_next_pos}");
+            } else if cur_thing == Thing::BoxLeft {
+                cur_box_otherside = cur_box_otherside + Point32::RIGHT;
+                box_otherside_next_pos = box_otherside_next_pos + Point32::RIGHT;
+                println!("{indent}{set} BoxRight is at position {cur_box_otherside}");
+                println!("{indent}{set} We want to move BoxRight to {box_otherside_next_pos}");
+            }
+
+            let mut can_move_current = false;
+            let mut can_move_otherside = cur_box_otherside == box_pos;
+
+            if let Some(next_thing) = self.maze.get(&next_pos) {
+                match next_thing {
+                    Thing::Empty => {
+                        can_move_current = true;
+                    },
+                    Thing::BoxLeft | Thing::BoxRight => {
+                        can_move_current = self.move_boxes(next_pos, direction, false, depth+1);
+                    },
+                    _ => {
+                        can_move_current = false;
+                    }
+                }
+            }
+
+            if !can_move_otherside {
+                if let Some(next_thing) = self.maze.get(&box_otherside_next_pos) {
+                    match next_thing {
+                        Thing::Empty => {
+                            can_move_otherside = true;
+                        },
+                        Thing::BoxLeft | Thing::BoxRight => {
+                            can_move_otherside = self.move_boxes(box_otherside_next_pos, direction, false, depth+1);
+                        },
+                        _ => {
+                            can_move_otherside = false;
+                        }
+                    }
+                }
+            }
+
+            if !set {
+                return can_move_current && can_move_otherside;
+            } else if can_move_current && can_move_otherside {
+
+            }*/
+
+            /*if set {
+                println!("{}Attempting to move {cur_thing} from position {box_pos} to {next_pos}", " ".repeat(depth));
+            }
+            if let Some(thing) = self.maze.get(&next_pos) {
+                
+
+                println!("{}Next position to check={next_pos} {thing}     set={set}", " ".repeat(depth));
+                match thing {
+                    Thing::Empty => {
+                        println!("{}Empty so it's okay", " ".repeat(depth));
+                        if set {
+                            println!("{}Setting {box_pos} to . and {next_pos} to {cur_thing}", " ".repeat(depth));
+                            self.maze.set(&box_pos, Thing::Empty);
+                            self.maze.set(&next_pos, cur_thing);
+                            if cur_thing == Thing::BoxRight {
+                                let box_left = box_pos - Point32::LEFT;
+
+                                println!("{}Setting {box_left} to . and {} to {}", " ".repeat(depth), next_pos + Point32::LEFT, Thing::BoxLeft);
+                                self.maze.set(&box_left, Thing::Empty);
+                                self.maze.set(&(next_pos + Point32::LEFT), Thing::BoxLeft);
+                            } else if cur_thing == Thing::BoxLeft {
+                                let box_right = box_pos - Point32::RIGHT;
+                                println!("{}Setting {box_right} to . and {} to {}", " ".repeat(depth), next_pos + Point32::RIGHT, Thing::BoxRight);
+                                self.maze.set(&box_right, Thing::Empty);
+                                self.maze.set(&(next_pos + Point32::RIGHT), Thing::BoxRight);
+                            }
+                        }
+                        return true;
+                    },
+                    Thing::BoxLeft => {
+                        let next_box_right: Point32 = next_pos + Point32 {x: 1, y: 0};
+                        println!("{}Next box is BoxLeft, have to check. BoxRight={next_box_right}", " ".repeat(depth));
+
+                        if self.move_boxes(next_pos, direction, false, depth+1) &&
+                           self.move_boxes(next_box_right, direction, false, depth+1) {
+                            println!("{}Able to move whole box at position {box_pos}", " ".repeat(depth));
+                            if set {
+                                println!("{}Move BoxLeft from {next_pos}", " ".repeat(depth));
+                                self.move_boxes(next_pos, direction, true, depth+1);
+                                println!("{}Move BoxRight from {next_box_right}", " ".repeat(depth));
+                                self.move_boxes(next_box_right, direction, true, depth+1);
+
+                                println!("{}Setting {box_pos} and {} to .", " ".repeat(depth), box_pos + Point32 {x: 1, y: 0});
+                                self.maze.set(&box_pos, Thing::Empty);
+                                self.maze.set(&(box_pos + Point32 {x: 1, y: 0}), Thing::Empty);
+
+                                println!("{}Setting {next_pos} to {thing} and {} to {}", " ".repeat(depth), next_pos + Point32 {x: 1, y: 0}, Thing::BoxRight);
+                                self.maze.set(&next_pos, thing);
+                                self.maze.set(&(next_pos + Point32 {x: 1, y: 0}), Thing::BoxRight);
+                            }
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    Thing::BoxRight => {
+                        let box_left = next_pos + Point32 {x: -1, y: 0};
+                        println!("{}Next box is BoxRight, have to check. BoxLeft={box_left}", " ".repeat(depth));
+
+                        if self.move_boxes(next_pos, direction, false, depth+1) &&
+                           self.move_boxes(box_left, direction, false, depth+1) {
+                            println!("{}Able to move whole box at position {box_pos}", " ".repeat(depth));
+                            if set {
+                                println!("{}Move BoxRight from {next_pos}", " ".repeat(depth));
+                                self.move_boxes(next_pos, direction, true, depth+1);
+                                println!("{}Move BoxLeft from {box_left}", " ".repeat(depth));
+                                self.move_boxes(box_left, direction, true, depth+1);
+
+                                println!("{}Setting {box_pos} and {} to .", " ".repeat(depth), box_pos + Point32 {x: -1, y: 0});
+                                self.maze.set(&box_pos, Thing::Empty);
+                                self.maze.set(&(box_pos + Point32 {x: -1, y: 0}), Thing::Empty);
+
+                                println!("{}Setting {next_pos} to {thing} and {} to {}", " ".repeat(depth), next_pos + Point32 {x: -1, y: 0}, Thing::BoxLeft);
+                                self.maze.set(&next_pos, thing);
+                                self.maze.set(&(next_pos + Point32 {x: - 1, y: 0}), Thing::BoxLeft);
+                            }
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                    _ => {
+                        return false;
+                    }
+                }
+            }*/
+        }
+        
         return false;
     }
 
@@ -286,14 +470,14 @@ impl WarehouseDeBatard {
         if let Some(thing) = self.maze.get(&new_pos) {
             match thing {
                 Thing::Empty => {
-                    self.maze.array[self.robot.y as usize][self.robot.x as usize] = Thing::Empty;
-                    self.maze.array[new_pos.y as usize][new_pos.x as usize] = Thing::Robot;
+                    self.maze.set(&self.robot, Thing::Empty);
+                    self.maze.set(&new_pos, Thing::Robot);
                     self.robot = new_pos;
                 },
                 Thing::BoxLeft | Thing::BoxRight => {
-                    if self.move_boxes(new_pos, direction) {
-                        self.maze.array[self.robot.y as usize][self.robot.x as usize] = Thing::Empty;
-                        self.maze.array[new_pos.y as usize][new_pos.x as usize] = Thing::Robot;
+                    if self.move_boxes(new_pos, direction, true, 0) {
+                        self.maze.set(&self.robot, Thing::Empty);
+                        self.maze.set(&new_pos, Thing::Robot);
                         self.robot = new_pos;
                     }
                 },
@@ -306,8 +490,8 @@ impl WarehouseDeBatard {
 
     fn robot_go(&mut self) {
         for &direction in self.directions.clone().iter() {
+            println!("Direction: {direction}");
             self.move_one_step(direction);
-            println!("");
             self.maze.print();
         }
     }
@@ -317,7 +501,7 @@ impl WarehouseDeBatard {
 
         for (y, line) in self.maze.array.iter().enumerate() {
             for (x, &thing) in line.iter().enumerate() {
-                if thing == Thing::Box {
+                if thing == Thing::BoxLeft {
                     score += 100 * y as u32 + x as u32;
                 }
             }
