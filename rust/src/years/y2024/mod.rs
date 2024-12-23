@@ -16,11 +16,11 @@ mod day15;
 mod day16;
 //mod day17;
 mod day18;
-//mod day19;
-//mod day20;
-//mod day21;
-//mod day22;
-//mod day23;
+mod day19;
+mod day20;
+mod day21;
+mod day22;
+mod day23;
 //mod day24;
 use crate::utils;
 
@@ -49,11 +49,11 @@ pub fn run_day(day: &mut u8, test: bool) -> (String, String) {
         16 => day16::get_day_results(&contents.to_string()),
         //17 => day17::get_day_results(&contents.to_string()),
         18 => day18::get_day_results(&contents.to_string()),
-        //19 => day19::get_day_results(&contents.to_string()),
-        //20 => day20::get_day_results(&contents.to_string()),
-        //21 => day21::get_day_results(&contents.to_string()),
-        //22 => day22::get_day_results(&contents.to_string()),
-        //23 => day23::get_day_results(&contents.to_string()),
+        19 => day19::get_day_results(&contents.to_string()),
+        20 => day20::get_day_results(&contents.to_string()),
+        21 => day21::get_day_results(&contents.to_string()),
+        22 => day22::get_day_results(&contents.to_string()),
+        23 => day23::get_day_results(&contents.to_string()),
         //24 => day24::get_day_results(&contents.to_string()),
         _ => {
             panic!("Day {day} has not yet been implemented");

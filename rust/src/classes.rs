@@ -113,6 +113,7 @@ impl<T: std::fmt::Display> fmt::Display for Point<T> {
     }
 }
 
+#[derive(Clone)]
 pub struct Maze<T> {
     pub size_y: usize,
     pub size_x: usize,
