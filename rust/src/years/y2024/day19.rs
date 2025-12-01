@@ -1,6 +1,6 @@
 use regex::Regex;
 
-fn towel_ok(towel: &str, re: &Regex) -> bool {
+fn _towel_ok(towel: &str, re: &Regex) -> bool {
     return re.is_match(towel);
 }
 
@@ -26,19 +26,19 @@ fn solve_day(file_contents: &str) -> (u32, u32) {
         }
     }
 
-    let mut sum_part1: u32 = 0;
+    let sum_part1: u32 = 0;
     let sum_part2: u32 = 0;
-    unsafe {
-        let re_pat = format!("^({})+$", AVAILABLE.join("|"));
-        let re = Regex::new(&re_pat).unwrap();
+    //unsafe {
+    //    let re_pat = format!("^({})+$", AVAILABLE.join("|"));
+    //    let re = Regex::new(&re_pat).unwrap();
+//
+    //    for &model in models_to_try.iter() {
+    //        if towel_ok(model, &re) {
+    //            sum_part1 += 1;
+    //        }
+    //    }
+    //}
 
-        for &model in models_to_try.iter() {
-            if towel_ok(model, &re) {
-                sum_part1 += 1;
-            }
-        }
-    }
-    
     (sum_part1, sum_part2)
 }
 

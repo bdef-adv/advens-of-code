@@ -1,8 +1,6 @@
-use rand::{thread_rng, Rng};
 use std::collections::{HashMap, HashSet};
 
 use std::hash::{Hash, Hasher};
-use std::path::Iter;
 
 #[derive(Debug, Clone)]
 struct HashableSet {
