@@ -10,7 +10,7 @@ pub mod classes;
 struct Args {
     #[arg(short, long, default_value_t = 0)]
     day: u8,
-    #[arg(short, long, default_value_t = 2024)]
+    #[arg(short, long, default_value_t = 2025)]
     year: u16,
     #[arg(short, long, default_value_t = false)]
     test: bool,
