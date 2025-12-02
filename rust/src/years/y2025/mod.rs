@@ -1,5 +1,5 @@
 mod day01;
-//mod day02;
+mod day02;
 //mod day03;
 //mod day04;
 //mod day05;
@@ -31,7 +31,7 @@ pub fn run_day(day: &mut u8, test: bool) -> (String, String) {
 
     match day {
         1 => day01::get_day_results(&contents.to_string()),
-        //2 => day02::get_day_results(&contents.to_string()),
+        2 => day02::get_day_results(&contents.to_string()),
         //3 => day03::get_day_results(&contents.to_string()),
         //4 => day04::get_day_results(&contents.to_string()),
         //5 => day05::get_day_results(&contents.to_string()),
