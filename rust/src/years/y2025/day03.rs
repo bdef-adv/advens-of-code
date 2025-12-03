@@ -1,7 +1,7 @@
-fn find_max_in_slice(a: &[u32]) -> (usize, u32) {
-    let mut max: u32 = 0;
+fn find_max_in_slice(a: &str) -> (usize, char) {
+    let mut max: char = '0';
     let mut max_idx: usize = 0;
-    for (x, &d) in a.iter().enumerate() {
+    for (x, d) in a.chars().enumerate() {
         if d > max {
             max = d;
             max_idx = x;
@@ -12,23 +12,18 @@ fn find_max_in_slice(a: &[u32]) -> (usize, u32) {
 
 
 fn find_max_joltage(bank: &str, length: usize) -> u64 {
-    let digits: Vec<u32> = bank
-                            .chars()
-                            .map(|c| c.to_digit(10).unwrap())
-                            .collect();
-
     let bank_len: usize = bank.len();
 
-    let mut joltage = 0;
-    let mut start = 0;
+    let mut joltage: u64 = 0;
+    let mut start: usize = 0;
 
     for x in 0..length {
         let remaining: usize = length - x - 1;
         let end: usize = bank_len - remaining;
 
-        let (max_idx, next_digit): (usize, u32) = find_max_in_slice(&digits[start..end]);
+        let (max_idx, next_digit): (usize, char) = find_max_in_slice(&bank[start..end]);
 
-        joltage = joltage * 10 + next_digit as u64;
+        joltage = joltage * 10 + next_digit.to_digit(10).unwrap() as u64;
         start += max_idx + 1;
     }
 
