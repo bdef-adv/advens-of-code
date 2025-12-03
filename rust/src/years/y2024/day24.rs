@@ -82,7 +82,7 @@ struct JungleGrove<'a> {
 }
 
 impl<'a> JungleGrove<'a> {
-    fn from(input: &str) -> JungleGrove {
+    fn from(input: &str) -> JungleGrove<'_> {
         let mut registries = HashMap::with_capacity(200);
         let mut operations = vec![];
 
