@@ -216,4 +216,32 @@ impl Maze<char> {
             array,
         }
     }
+
+    #[allow(unused)]
+    pub fn count_neighbors(&self, pos: &Point<i32>, neighbor: &char) -> u8 {
+        let mut count: u8 = 0;
+
+        if let Some(v) = self.get(pos) {
+            let directions: [Point<i32>; 8] = [
+                Point::from(0, 1),
+                Point::from(0, -1),
+                Point::from(1, 0),
+                Point::from(1, -1),
+                Point::from(1, 1),
+                Point::from(-1, 0),
+                Point::from(-1, 1),
+                Point::from(-1, -1),
+            ];
+
+            for direction in directions {
+                if let Some(neigh) = self.get(&(*pos + direction)) {
+                    if neigh == *neighbor {
+                        count += 1;
+                    }
+                }
+            }
+        }
+
+        count
+    }
 }

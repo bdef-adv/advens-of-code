@@ -1,8 +1,26 @@
+use crate::classes::{Point, Maze};
+
+type Point32 = Point<i32>;
+type MazeChar = Maze<char>;
+
+
 fn part01(file_contents: &str) -> u64 {
     /*
         Part 1
      */
     let mut sum: u64 = 0;
+
+    let maze = MazeChar::from(file_contents);
+    maze.print();
+
+    for y in 0..maze.size_y {
+        for x in 0..maze.size_x {
+            let pos = Point32::from(x as i32, y as i32);
+            if maze.count_neighbors(&pos, &'@') < 4 {
+                sum += 1;
+            }
+        }
+    }
 
     return sum;
 }
