@@ -3,7 +3,7 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
-//mod day06;
+mod day06;
 //mod day07;
 //mod day08;
 //mod day09;
@@ -35,7 +35,7 @@ pub fn run_day(day: &mut u8, test: bool) -> (String, String) {
         3 => day03::get_day_results(&contents.to_string()),
         4 => day04::get_day_results(&contents.to_string()),
         5 => day05::get_day_results(&contents.to_string()),
-        //6 => day06::get_day_results(&contents.to_string()),
+        6 => day06::get_day_results(&contents.to_string()),
         //7 => day07::get_day_results(&contents.to_string()),
         //8 => day08::get_day_results(&contents.to_string()),
         //9 => day09::get_day_results(&contents.to_string()),
