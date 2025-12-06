@@ -1,18 +1,20 @@
-fn part01(file_contents: &str) -> usize {
+fn part01(_ile_contents: &str) -> usize {
     /*
         Part 1
      */
-    let mut sum: u128 = 0;
+    let mut sum: usize = 0;
+    sum += 0;
 
     sum
 }
 
 
-fn part02(file_contents: &str) -> u128 {
+fn part02(_file_contents: &str) -> usize {
     /*
         Part 2
      */
-    let mut sum: u128 = 0;
+    let mut sum: usize = 0;
+    sum += 0;
 
     sum
 }
