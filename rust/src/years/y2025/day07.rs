@@ -1,5 +1,7 @@
+use itertools::Itertools;
+
 use crate::classes::{Point, Maze};
-use std::collections::HashSet;
+use std::collections::{HashSet,HashMap};
 
 type Point32 = Point<i32>;
 type MazeChar = Maze<char>;
@@ -14,8 +16,6 @@ fn part01(file_contents: &str) -> usize {
         Part 1
      */
     let mut sum: usize = 0;
-    sum += 0;
-
     let mut maze = MazeChar::from(file_contents);
     let mut tachyons: Vec<Point32> = vec![maze.find_first('S').unwrap()];
 
@@ -48,14 +48,55 @@ fn part01(file_contents: &str) -> usize {
 }
 
 
-fn part02(_file_contents: &str) -> usize {
+fn part02(file_contents: &str) -> usize {
     /*
         Part 2
      */
-    let mut sum: usize = 0;
-    sum += 0;
+    let maze: MazeChar = MazeChar::from(file_contents);
+    let mut tachyons: HashMap<Point32, usize> = HashMap::with_capacity(maze.size_y);
+    tachyons.insert(maze.find_first('S').unwrap(), 1);
 
-    sum
+    while !tachyons.iter().all(|(t, _)| t.y == maze.size_y as i32 - 1) {
+        let mut next_tachyons: HashMap<Point32, usize> = HashMap::with_capacity(tachyons.len()*2);
+
+        for (&tachyon, &count) in tachyons.iter().sorted_by_key(|(&t, _)| t.x)  {
+            let next_position: Point32 = tachyon + DIRECTION_DOWN;
+
+            if let Some(next_char) = maze.get(&next_position) {
+                match next_char {
+                    '.' => {
+                        if let Some(&cur_tachyon) = next_tachyons.get(&next_position) {
+                            next_tachyons.insert(next_position, count+cur_tachyon);
+                        } else {
+                            next_tachyons.insert(next_position, count);
+                        }
+                    }
+                    '^'  => {
+                        let left_split: Point32 = next_position + DIRECTION_LEFT;
+                        if let Some(&cur_tachyon) = next_tachyons.get(&left_split) {
+                            next_tachyons.insert(left_split, cur_tachyon+count);
+                        } else {
+                            next_tachyons.insert(left_split, count);
+                        }
+
+                        let right_split: Point32 = next_position + DIRECTION_RIGHT;
+                        if let Some(&cur_tachyon) = next_tachyons.get(&right_split) {
+                            next_tachyons.insert(right_split, cur_tachyon+count);
+                        } else {
+                            next_tachyons.insert(right_split, count);
+                        }
+
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        tachyons = next_tachyons;
+    }
+
+
+    tachyons.iter().map(|(_, &c)| c).sum()
 }
 
 
