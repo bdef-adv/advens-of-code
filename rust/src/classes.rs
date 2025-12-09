@@ -132,6 +132,23 @@ impl<T: Copy + std::fmt::Display + std::cmp::PartialEq> Maze<T> {
     }
 
     #[allow(unused)]
+    pub fn from_size(size_x: usize, size_y: usize, init: T) -> Self {
+        let mut array: Vec<Vec<T>> = Vec::with_capacity(size_y);
+        for y in 0..size_y {
+            array.push(Vec::with_capacity(size_x));
+            for _x in 0..size_x {
+                array[y].push(init);
+            }
+        }
+
+        return Self {
+            size_x,
+            size_y,
+            array
+        }
+    }
+
+    #[allow(unused)]
     pub fn print(&self) {
         for row in self.array.iter() {
             for &col in row.iter() {
@@ -243,5 +260,62 @@ impl Maze<char> {
         }
 
         count
+    }
+
+    #[allow(unused)]
+    pub fn fill_rectangles(&mut self, fill_char: char) {
+        if self.size_y == 0 || self.size_x == 0 {
+            return;
+        }
+
+        // First, mark all cells reachable from the border (outside the rectangles)
+        let mut visited = vec![vec![false; self.size_x]; self.size_y];
+
+        // Start flood fill from all border cells that are not 'X'
+        for y in 0..self.size_y {
+            for x in 0..self.size_x {
+                // Check if on border
+                if y == 0 || y == self.size_y - 1 || x == 0 || x == self.size_x - 1 {
+                    if self.array[y][x] != 'X' && !visited[y][x] {
+                        self.flood_fill_mark(&mut visited, x, y);
+                    }
+                }
+            }
+        }
+
+        // Now fill all unvisited cells that are not 'X' (these are inside rectangles)
+        for y in 0..self.size_y {
+            for x in 0..self.size_x {
+                if !visited[y][x] && self.array[y][x] != 'X' {
+                    self.array[y][x] = fill_char;
+                }
+            }
+        }
+    }
+
+    fn flood_fill_mark(&self, visited: &mut Vec<Vec<bool>>, x: usize, y: usize) {
+        let mut stack = vec![(x, y)];
+
+        while let Some((cx, cy)) = stack.pop() {
+            if visited[cy][cx] || self.array[cy][cx] == 'X' {
+                continue;
+            }
+
+            visited[cy][cx] = true;
+
+            // Check all 4 neighbors
+            if cx > 0 {
+                stack.push((cx - 1, cy));
+            }
+            if cx < self.size_x - 1 {
+                stack.push((cx + 1, cy));
+            }
+            if cy > 0 {
+                stack.push((cx, cy - 1));
+            }
+            if cy < self.size_y - 1 {
+                stack.push((cx, cy + 1));
+            }
+        }
     }
 }

@@ -6,6 +6,8 @@ edition = "2021"
 [dependencies]
 chrono = { version = "0.4.38", features = ["now"] }
 clap = { version = "4.0", features = ["derive"] }
+geo = "0.32.0"
+geo-types = "0.7.18"
 itertools = "0.13.0"
 memoize = "0.4.2"
 pathfinding = "4.12.0"
